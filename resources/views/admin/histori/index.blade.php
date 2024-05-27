@@ -7,7 +7,7 @@
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1>Konsultasi</h1>
+              <h1>History Pasien</h1>
             </div>
           </div>
         </div><!-- /.container-fluid -->
@@ -20,8 +20,8 @@
                 <div class="col-12">
                     <div class="card mt-3">
                         <div class="card-header d-flex align-items-center">
-                            <h3 class="card-title">Data Konsultasi</h3>
-                            <a href="{{ route('konsul.create') }}" class="btn btn-primary ml-auto btn-sm"><i class="fas fa-plus fa-sm"></i> Tambah</a>
+                            <h3 class="card-title">Hasil Konsultasi</h3>
+                            <!-- <a href="{{ route('konsul.create') }}" class="btn btn-primary ml-auto btn-sm"><i class="fas fa-plus fa-sm"></i> Tambah</a> -->
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
@@ -31,22 +31,31 @@
                                     <th>NO</th>
                                     <th>PASIEN</th>
                                     <th>AHLI GIZI</th>
-                                    <th>MAKANAN</th>
-                                    <th>MAKANAN ALTERNATIF</th>
-                                    <th>TANGGAL KONSULTASI</th>
+                                    <!-- <th>MAKANAN</th>
+                                    <th>MAKANAN ALTERNATIF</th> -->
+                                    <th>TANGGAL KONSULTASI</th> 
+                                    <th>PDF</th>
                                 </thead>
                                 <tbody>
-                                @foreach ($data as $konsul)
+                                    @foreach ( $data as $konsul)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $konsul->pasien->nama }}</td>
                                         <td>{{ $konsul->ahligizi->nama }}</td>
-                                        <td>{{ $konsul->makanan ? $konsul->makanan->nama_makanan : 'N/A' }}</td>
-                                        <td>{!! $konsul->makanan_alternative !!}</td>
                                         <td>{{ $konsul->tgl_konsultasi }}</td>
-                                    </tr>
-                                @endforeach
+                                        <td>
+                                            <div class="">
+                                                
+                                                <!-- Button Download PDF berdasarkan ID -->
+                                                    <form action="{{ route('generate.pdf', $konsul->id) }}" method="GET" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-download"></i> Download</button>
+                                                    </form>
 
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
                                     <!-- Tambahkan baris tabel lainnya di sini -->
                                 </tbody>
                             </table>

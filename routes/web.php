@@ -6,7 +6,9 @@ use App\Http\Controllers\KonsulController;
 use App\Http\Controllers\MakananAlternativeController;
 use App\Http\Controllers\MakananController;
 use App\Http\Controllers\PasienController;
+use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RiwayatPenyakitController;
+use App\Http\Controllers\PDFController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,15 +22,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/home', function () {
+Route::get('/', function () {
     return view('home');
 });
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 Route::get('/login', function () {
     return view('auth/login');
 });
+
+Route::get('/generate-pdf/{id}', [PDFController::class, 'generatePDF'])->name('generate.pdf');
+
+
+Route::get('/histori', [HistoriController::class, 'index'])
+    ->name('histori.index');
+
 
 Route::get('/ahli-gizi', [AhliGiziController::class, 'index'])
     ->name('ahli-gizi.index');
