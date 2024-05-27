@@ -43,6 +43,7 @@
                                         <td>{{ $makanan->protein }}</td>
                                         <td>{{ $makanan->lemak }}</td>
                                         <td>{{ $makanan->karbohidrat }}</td>
+                                        <td>{{ $makanan->kategori->nama_kategori }}</td>
                                     </tr>
                                     @endforeach
                                     <!-- Tambahkan baris tabel lainnya di sini -->

@@ -15,9 +15,8 @@ class PasienController extends Controller
     }
 
     public function create()
-    {
-        $data = RiwayatPenyakit::orderBy('id', 'asc')->get();
-        return view('admin.pasien.create', compact('data'));
+    {;
+        return view('admin.pasien.create');
     }
 
     public function store(Request $request)
@@ -43,4 +42,5 @@ class PasienController extends Controller
             return response()->json(['message' => 'Pasien tidak ditemukan'], 404);
         }
     }
+
 }

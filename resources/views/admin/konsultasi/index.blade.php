@@ -31,7 +31,7 @@
                                     <th>NO</th>
                                     <th>PASIEN</th>
                                     <th>AHLI GIZI</th>
-                                    <th>MAKANAN</th>
+                                    <th>MAKANAN </th>
                                     <th>MAKANAN ALTERNATIF</th>
                                     <th>TANGGAL KONSULTASI</th>
                                 </thead>
