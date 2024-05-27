@@ -102,6 +102,8 @@ Route::post('/cek-karbohidrat', [KonsulController::class, 'cekKarbohidrat'])
 Route::post('/cek-lemak', [KonsulController::class, 'cekLemak'])
     ->name('konsul.cek-lemak');
 
+Route::get('/riwayat_penyakit', [RiwayatPenyakitController::class, 'index'])
+    ->name('riwayat_penyakit.index');
 Route::get('/create-penyakit', [RiwayatPenyakitController::class, 'create'])
     ->name('riwayat-penyakit.create');
 Route::post('/tambah-penyakit', [RiwayatPenyakitController::class, 'store'])
