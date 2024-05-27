@@ -7,6 +7,12 @@ use App\Models\RiwayatPenyakit;
 
 class RiwayatPenyakitController extends Controller
 {
+    public function index()
+    {
+        $data = RiwayatPenyakit::with('pasien')->paginate(10);
+        return view('riwayat_penyakit.index', compact('data'));
+    }
+
     public function create()
     {
         return view('admin.riwayat-penyakit.create');

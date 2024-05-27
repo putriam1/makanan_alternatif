@@ -102,6 +102,7 @@ Route::post('/cek-karbohidrat', [KonsulController::class, 'cekKarbohidratSayur']
 Route::post('/cek-lemak', [KonsulController::class, 'cekLemakSayur'])
     ->name('konsul.cek-lemak');
 
+<<<<<<< HEAD
 Route::post('/cek-protein-lauk', [KonsulController::class, 'cekProteinLauk'])
     ->name('konsul.cek-protein-lauk');
 Route::post('/cek-karbohidrat-lauk', [KonsulController::class, 'cekKarbohidratLauk'])
@@ -123,6 +124,10 @@ Route::post('/cek-karbohidrat-pokok', [KonsulController::class, 'cekKarbohidratP
 Route::post('/cek-lemak-pokok', [KonsulController::class, 'cekLemakPokok'])
     ->name('konsul.cek-lemak-pokok');
 
+=======
+Route::get('/riwayat_penyakit', [RiwayatPenyakitController::class, 'index'])
+    ->name('riwayat_penyakit.index');
+>>>>>>> 07e3eb755cabe63398fc44e070a533e163336454
 Route::get('/create-penyakit', [RiwayatPenyakitController::class, 'create'])
     ->name('riwayat-penyakit.create');
 Route::post('/tambah-penyakit', [RiwayatPenyakitController::class, 'store'])
