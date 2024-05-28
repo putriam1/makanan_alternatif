@@ -45,7 +45,7 @@ class RiwayatPenyakitController extends Controller
 
     public function getRiwayat($id_pasien)
     {
-        $riwayatpenyakit = RiwayatPenyakit::where('id_pasien', $id_pasien)->first();
+        $riwayatpenyakit = RiwayatPenyakit::where('id_pasien', $id_pasien)->orderBy('id', 'desc')->get(['id', 'nama_penyakit']);
 
         if ($riwayatpenyakit) {
             return response()->json($riwayatpenyakit);

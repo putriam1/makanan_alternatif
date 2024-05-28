@@ -21,4 +21,9 @@ class RiwayatPenyakit extends Model
     {
         return $this->belongsTo(Pasien::class, 'id_pasien', 'nomor_pasien');
     }
+
+    public function konsul()
+    {
+        return $this->hasMany(Konsul::class, 'id_riwayat_penyakit', 'id');
+    }
 }

@@ -18,6 +18,7 @@ class Konsul extends Model
     protected $fillable = [
         'id_pasien',
         'id_ahligizi',
+        'id_riwayat_penyakit',
         'kode_makanan',
         'kode_makanan_alternative',
         'tgl_konsultasi',
@@ -33,6 +34,11 @@ class Konsul extends Model
         return $this->belongsTo(AhliGizi::class, 'id_ahligizi');
     }
 
+    public function riwayatpenyakit()
+    {
+        return $this->belongsTo(RiwayatPenyakit::class, 'id_riwayat_penyakit');
+    }
+
     public function makanan()
     {
         return $this->belongsTo(Makanan::class, 'kode_makanan');
@@ -42,4 +48,5 @@ class Konsul extends Model
     {
         return $this->belongsTo(MakananAlternative::class, 'kode_makanan_alternative');
     }
+
 }

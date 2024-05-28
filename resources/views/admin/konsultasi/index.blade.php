@@ -42,7 +42,13 @@
                                         <td>{{ $konsul->pasien->nama }}</td>
                                         <td>{{ $konsul->ahligizi->nama }}</td>
                                         <td>{{ $konsul->makanan ? $konsul->makanan->nama_makanan : 'N/A' }}</td>
-                                        <td>{!! $konsul->makanan_alternative !!}</td>
+                                        <td>
+                                            @foreach ($konsul->makanan_alternative_by_category as $makanan_alternatif)
+                                                @foreach ($makanan_alternatif as $makanan)s
+                                                    ID Kategori: {{ $makanan['id_kategori'] }} - Nama Makanan: {{ $makanan['nama_makanan'] }}<br>
+                                                @endforeach
+                                            @endforeach
+                                        </td>
                                         <td>{{ $konsul->tgl_konsultasi }}</td>
                                     </tr>
                                 @endforeach

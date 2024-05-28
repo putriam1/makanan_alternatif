@@ -16,15 +16,41 @@ class KonsulController extends Controller
     public function index()
     {
         $data = Konsul::paginate(10);
-
+        
         $data->each(function ($item) {
-            $kode_makanan_alternative = explode(',', $item->kode_makanan_alternative);
-            $makanan_alternative = MakananAlternative::whereIn('kode_makanan', $kode_makanan_alternative)->pluck('nama_makanan')->toArray();
+            // Pisahkan kode makanan alternatif menjadi array berdasarkan kategori
+            $kategori_makanan_alternative = explode('|', $item->kode_makanan_alternative);
             
-            $item->makanan_alternative = collect($makanan_alternative)->map(function ($makanan, $key) {
-                return "Makanan " . ($key + 1) . ": " . $makanan;
-            })->implode('<br>');
-        });
+            // Buat array untuk menyimpan makanan alternatif berdasarkan kategori
+            $makanan_alternative_by_category = [];
+            
+            // Loop melalui setiap kategori makanan alternatif
+            foreach ($kategori_makanan_alternative as $kategori) {
+                // Pisahkan kategori dan makanan alternatif berdasarkan kategori menjadi array
+                $kategori_makanan = explode(',', $kategori);
+                
+                // Cari makanan alternatif berdasarkan kategori
+                $makanan_alternatif_with_name = [];
+                foreach ($kategori_makanan as $makanan_id) {
+                    $makanan_alternatif = MakananAlternative::find($makanan_id);
+                    if ($makanan_alternatif) {
+                        // Jika ditemukan, tambahkan nama makanan ke dalam array
+                        $id_kategori = $makanan_alternatif->id_kategori;
+                        $nama_makanan = $makanan_alternatif->nama_makanan;
+                        $makanan_alternatif_with_name[] = [
+                            'id_kategori' => $id_kategori,
+                            'nama_makanan' => $nama_makanan
+                        ];
+                    }
+                }
+                
+                // Simpan makanan alternatif dengan nama ke dalam array berdasarkan kategori
+                $makanan_alternative_by_category[] = $makanan_alternatif_with_name;
+            }
+            
+            // Simpan makanan alternatif berdasarkan kategori ke dalam properti tambahan
+            $item->makanan_alternative_by_category = $makanan_alternative_by_category;
+        });        
 
         return view('admin.konsultasi.index', compact('data'));
     }
@@ -627,8 +653,9 @@ class KonsulController extends Controller
     {
         $data = new Konsul;
         $data->id_pasien = $request->id_pasien;
-        $data->id_ahligizi = $request->id_ahligizi;
-        dd($request->input('id_riwayat_penyakit'));
+        $data->id_ahligizi = $request->id_ahli_gizi;
+        $riwayatPenyakit = $request->input('riwayat_penyakit', []);
+        $data->id_riwayat_penyakit = implode(',', $riwayatPenyakit);
         $data->kode_makanan = implode(',', [
             $request->kode_makanan_sayur,
             $request->kode_makanan_lauk,
@@ -646,7 +673,6 @@ class KonsulController extends Controller
             $kodeMakananPokok
         ]);
         $data->tgl_konsultasi = $request->tgl_konsultasi;
-        dd($data);
         $data->save();
 
         return redirect('/konsul');

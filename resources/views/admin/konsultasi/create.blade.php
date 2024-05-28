@@ -26,15 +26,8 @@
                             <form action="{{ route('konsul.store') }}" method="POST">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="id_pasien" class="form-label">Nama Pasien</label>
-                                    <select name="id_pasien" id="id_pasien" class="form-control">
-                                        <option value="">-- Pilih Pasien --</option>
-                                        @foreach ($pasien as $data_pasien)
-                                            <option value="{{ $data_pasien->id }}" {{ old('id', $selected_pasien ?? '') == $data_pasien->id ? 'selected' : '' }}>
-                                                {{ $data_pasien->nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <label for="id_pasien" class="form-label">Nomor Pasien</label>
+                                    <input type="text" class="form-control" id="id_pasien" name="id_pasien">
                                 </div>
                                 <div class="mb-3">
                                     <label for="nama" class="form-label">Nama Pasien</label>
@@ -50,8 +43,10 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="id_riwayat_penyakit" class="form-label">Riwayat Penyakit</label>
-                                    <table class="table" id="riwayat_penyakit">
-                                        
+                                    <table class="table">
+                                        <tbody id="riwayat_penyakit">
+
+                                        </tbody>
                                     </table>
                                 </div>
                                 <hr>
@@ -237,14 +232,7 @@
                             if (data.length > 0) {
                                 data.forEach(function(penyakit) {
                                     // Tambahkan baris-baris data ke dalam tabel
-                                    $('#riwayat_penyakit').append('<tr><td>' + penyakit + '</td></tr>');
-
-                                    // Tambahkan input tersembunyi untuk setiap penyakit
-                                    $('<input>').attr({
-                                        type: 'hidden',
-                                        name: 'id_riwayat_penyakit[]',
-                                        value: penyakit
-                                    }).appendTo('form');
+                                    $('#riwayat_penyakit').append('<tr><td><input type="checkbox" name="riwayat_penyakit[]" value="' + penyakit.id + '"></td><td>' + penyakit.nama_penyakit + '</td></tr>');
                                 });
                             } else {
                                 // Tampilkan pesan jika tidak ada riwayat penyakit
