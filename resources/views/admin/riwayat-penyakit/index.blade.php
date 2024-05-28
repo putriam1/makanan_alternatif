@@ -21,7 +21,7 @@
                     <div class="card mt-3">
                         <div class="card-header d-flex align-items-center">
                             <h3 class="card-title">Data Riwayat Penyakit Pasien</h3>
-                            <a href="{{ route('riwayat_penyakit.create') }}" class="btn btn-primary ml-auto btn-sm"><i class="fas fa-plus fa-sm"></i> Tambah</a>
+                            <a href="{{ route('riwayat-penyakit.create') }}" class="btn btn-primary ml-auto btn-sm"><i class="fas fa-plus fa-sm"></i> Tambah</a>
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
@@ -40,10 +40,10 @@
                                 @foreach ($data as $riwayat_penyakit)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $riwayat_penyakit->pasien->id }}</td>
+                                        <td>{{ $riwayat_penyakit->pasien->nomor_pasien }}</td>
                                         <td>{{ $riwayat_penyakit->pasien->nama }}</td>
-                                        <td>{{ $riwayat_penyakit->pasien->jenis_kelamin }}</td>
-                                        <td>{{ $riwayat_penyakit->penyakit }}</td>
+                                        <td>{{ $riwayat_penyakit->pasien->jk }}</td>
+                                        <td>{{ $riwayat_penyakit->nama_penyakit }}</td>
                                     </tr>
                                 @endforeach
 

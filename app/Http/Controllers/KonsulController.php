@@ -366,7 +366,7 @@ class KonsulController extends Controller
         $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
         $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
         $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
+        
         $pasien = Pasien::orderBy('nomor_pasien', 'asc')->get();
         $ahligizi = AhliGizi::orderBy('nip', 'asc')->get();
         $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();

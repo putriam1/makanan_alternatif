@@ -58,7 +58,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('riwayat-penyakit.create') }}" class="nav-link {{ request()->is('*penyakit') ? 'active' : '' }}">
+              <a href="{{ route('riwayat-penyakit.index') }}" class="nav-link {{ request()->is('*penyakit') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-users"></i>
                 <p>
                   Riwayat Penyakit

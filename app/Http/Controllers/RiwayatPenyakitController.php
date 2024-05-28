@@ -10,7 +10,7 @@ class RiwayatPenyakitController extends Controller
     public function index()
     {
         $data = RiwayatPenyakit::with('pasien')->paginate(10);
-        return view('riwayat_penyakit.index', compact('data'));
+        return view('admin.riwayat-penyakit.index', compact('data'));
     }
 
     public function create()
@@ -30,7 +30,7 @@ class RiwayatPenyakitController extends Controller
         $data->nama_penyakit = $request->penyakit; 
         $data->save();
 
-        return redirect('/create-penyakit')->with('success', 'Data riwayat penyakit berhasil ditambahkan');
+        return redirect('/riwayat_penyakit')->with('success', 'Data riwayat penyakit berhasil ditambahkan');
     }
 
     public function getRiwayatPenyakit($nomor_pasien){
@@ -40,6 +40,17 @@ class RiwayatPenyakitController extends Controller
             return response()->json($riwayat_penyakit);
         } else {
             return response()->json(['message' => 'Pasien tidak ditemukan'], 404);
+        }
+    }
+
+    public function getRiwayat($id_pasien)
+    {
+        $riwayatpenyakit = RiwayatPenyakit::where('id_pasien', $id_pasien)->first();
+
+        if ($riwayatpenyakit) {
+            return response()->json($riwayatpenyakit);
+        } else {
+            return response()->json(['message' => 'Riwayat Penyakit tidak ditemukan'], 404);
         }
     }
 }

@@ -26,10 +26,18 @@
                             <form action="{{ route('konsul.store') }}" method="POST">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="id_pasien" class="form-label">Nomor Pasien</label>
-                                    <input type="text" class="form-control" id="id_pasien" name="id_pasien">
+                                    <label for="id_pasien" class="form-label">Nama Pasien</label>
+                                    <select name="id_pasien" id="id_pasien" class="form-control">
+                                        <option value="">-- Pilih Pasien --</option>
+                                        @foreach ($pasien as $data_pasien)
+                                            <option value="{{ $data_pasien->id }}" {{ old('id', $selected_pasien ?? '') == $data_pasien->id ? 'selected' : '' }}>
+                                                {{ $data_pasien->nama }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="mb-3">
+<<<<<<< HEAD
                                     <label for="nama" class="form-label">Nama Pasien</label>
                                     <input type="text" class="form-control" id="nama" name="nama" readonly>
                                 </div>
@@ -40,6 +48,17 @@
                                 <div class="mb-3">
                                     <label for="nama_ahli_gizi" class="form-label">Nama Ahli Gizi</label>
                                     <input type="text" class="form-control" id="nama_ahli_gizi" name="nama_ahli_gizi" readonly>
+=======
+                                    <label for="id_ahligizi" class="form-label">Nama Ahli Gizi</label>
+                                    <select name="id_ahligizi" id="id_ahligizi" class="form-control">
+                                        <option value="">-- Pilih Ahli Gizi --</option>
+                                        @foreach ($ahligizi as $data_ahligizi)
+                                            <option value="{{ $data_ahligizi->id }}" {{ old('id', $selected_ahligizi ?? '') == $data_ahligizi->id ? 'selected' : '' }}>
+                                                {{ $data_ahligizi->nama }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+>>>>>>> 8572e48382eebf95c2c0a716eba5001929b359c0
                                 </div>
                                 <div class="mb-3">
                                     <label for="id_riwayat_penyakit" class="form-label">Riwayat Penyakit</label>
@@ -212,6 +231,7 @@
     <!-- /.content -->
 </div>
 
+<<<<<<< HEAD
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
@@ -315,4 +335,6 @@
     });
 </script>
 
+=======
+>>>>>>> 8572e48382eebf95c2c0a716eba5001929b359c0
 @endsection
