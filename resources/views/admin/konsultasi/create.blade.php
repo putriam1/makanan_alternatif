@@ -26,26 +26,24 @@
                             <form action="{{ route('konsul.store') }}" method="POST">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="id_pasien" class="form-label">Nama Pasien</label>
-                                    <select name="id_pasien" id="id_pasien" class="form-control">
-                                        <option value="">-- Pilih Pasien --</option>
-                                        @foreach ($pasien as $data_pasien)
-                                            <option value="{{ $data_pasien->id }}" {{ old('id', $selected_pasien ?? '') == $data_pasien->id ? 'selected' : '' }}>
-                                                {{ $data_pasien->nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <label for="pasien" class="form-label">Nomor Pasien</label>
+                                    <input type="text" class="form-control" id="pasien" name="pasien">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="id_ahligizi" class="form-label">Nama Ahli Gizi</label>
-                                    <select name="id_ahligizi" id="id_ahligizi" class="form-control">
-                                        <option value="">-- Pilih Ahli Gizi --</option>
-                                        @foreach ($ahligizi as $data_ahligizi)
-                                            <option value="{{ $data_ahligizi->id }}" {{ old('id', $selected_ahligizi ?? '') == $data_ahligizi->id ? 'selected' : '' }}>
-                                                {{ $data_ahligizi->nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <label for="nama" class="form-label">Nama Pasien</label>
+                                    <input type="text" class="form-control" id="nama" name="nama" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="penyakit" class="form-label">Riwayat Penyakit</label>
+                                    <input type="text" class="form-control" id="penyakit" name="penyakit" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ahli-gizi" class="form-label">NIP</label>
+                                    <input type="text" class="form-control" id="ahli-gizi" name="ahli-gizi">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nama_ahligizi" class="form-label">Nama Ahli Gizi</label>
+                                    <input type="text" class="form-control" id="nama_ahligizi" name="nama_ahligizi" readonly>
                                 </div>
                                 <div class="mb-3">
                                     <label for="kode_makanan" class="form-label">Makanan</label>
@@ -102,5 +100,72 @@
     </section>
     <!-- /.content -->
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#pasien').on('input', function() {
+            var id_pasien = $(this).val();
+            if (id_pasien) {
+                $.ajax({
+                    url: '/pasien/' + id_pasien,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if (data) {
+                            $('#nama').val(data.nama);
+                        } else {
+                            $('#nama').val('');
+                        }
+                    },
+                    error: function() {
+                        $('#nama').val('');
+                    }
+                });
+                $.ajax({
+                    url: '/riwayatpenyakit/' + id_pasien,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if (data) {
+                            $('#penyakit').val(data.nama_penyakit);
+                        } else {
+                            $('#penyakit').val('');
+                        }
+                    },
+                    error: function() {
+                        $('#penyakit').val('');
+                    }
+                });
+            } else {
+                $('#nama').val('');
+                $('#penyakit').val('');
+            }
+        });
+        $('#ahli-gizi').on('input', function() {
+            var nip = $(this).val();
+            if (nip) {
+                $.ajax({
+                    url: '/ahligizi/' + nip,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if (data) {
+                            $('#nama_ahligizi').val(data.nama);
+                        } else {
+                            $('#nama_ahligizi').val('');
+                        }
+                    },
+                    error: function() {
+                        $('#nama_ahligizi').val('');
+                    }
+                });
+            } else {
+                $('#nama_ahligizi').val('');
+            }
+        });
+    });
+</script>
+
 
 @endsection

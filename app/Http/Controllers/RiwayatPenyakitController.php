@@ -26,5 +26,16 @@ class RiwayatPenyakitController extends Controller
 
         return redirect('/ahli-gizi')->with('success', 'Data riwayat penyakit berhasil ditambahkan');
     }
+
+    public function getRiwayat($id_pasien)
+    {
+        $riwayatpenyakit = RiwayatPenyakit::where('id_pasien', $id_pasien)->first();
+
+        if ($riwayatpenyakit) {
+            return response()->json($riwayatpenyakit);
+        } else {
+            return response()->json(['message' => 'Riwayat Penyakit tidak ditemukan'], 404);
+        }
+    }
 }
 

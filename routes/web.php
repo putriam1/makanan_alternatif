@@ -107,3 +107,6 @@ Route::get('/create-penyakit', [RiwayatPenyakitController::class, 'create'])
 Route::post('/tambah-penyakit', [RiwayatPenyakitController::class, 'store'])
     ->name('riwayat-penyakit.store');
 Route::get('/pasien/{nomor_pasien}', [PasienController::class, 'getPasien']);
+
+Route::get('/riwayatpenyakit/{id_pasien}', [RiwayatPenyakitController::class, 'getRiwayat']);
+Route::get('/ahligizi/{nip}', [AhliGiziController::class, 'getAhligizi']);

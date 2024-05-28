@@ -40,4 +40,15 @@ class AhliGiziController extends Controller
         }
         return redirect('/ahli-gizi');
     }
+
+    public function getAhligizi($nip)
+    {
+        $ahligizi = AhliGizi::where('nip', $nip)->first();
+
+        if ($ahligizi) {
+            return response()->json($ahligizi);
+        } else {
+            return response()->json(['message' => 'Ahli Gizi tidak ditemukan'], 404);
+        }
+    }
 }
