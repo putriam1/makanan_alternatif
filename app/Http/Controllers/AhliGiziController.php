@@ -41,7 +41,6 @@ class AhliGiziController extends Controller
         return redirect('/ahli-gizi');
     }
 
-<<<<<<< HEAD
     public function getAhliGizi($nip)
     {
         $ahli_gizi = AhliGizi::where('nip', $nip)->first();
@@ -50,16 +49,7 @@ class AhliGiziController extends Controller
             return response()->json($ahli_gizi);
         } else {
             return response()->json(['message' => 'ahli gizi tidak ditemukan'], 404);
-=======
-    public function getAhligizi($nip)
-    {
-        $ahligizi = AhliGizi::where('nip', $nip)->first();
 
-        if ($ahligizi) {
-            return response()->json($ahligizi);
-        } else {
-            return response()->json(['message' => 'Ahli Gizi tidak ditemukan'], 404);
->>>>>>> 8572e48382eebf95c2c0a716eba5001929b359c0
         }
     }
 }
