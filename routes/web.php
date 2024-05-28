@@ -124,10 +124,12 @@ Route::post('/cek-lemak-pokok', [KonsulController::class, 'cekLemakPokok'])
     ->name('konsul.cek-lemak-pokok');
 
 Route::get('/riwayat_penyakit', [RiwayatPenyakitController::class, 'index'])
-    ->name('riwayat_penyakit.index');
-
+    ->name('riwayat-penyakit.index');
 Route::get('/create-penyakit', [RiwayatPenyakitController::class, 'create'])
     ->name('riwayat-penyakit.create');
 Route::post('/tambah-penyakit', [RiwayatPenyakitController::class, 'store'])
     ->name('riwayat-penyakit.store');
 Route::get('/pasien/{nomor_pasien}', [PasienController::class, 'getPasien']);
+
+Route::get('/riwayatpenyakit/{id_pasien}', [RiwayatPenyakitController::class, 'getRiwayat']);
+Route::get('/ahli-gizi/{nip}', [AhliGiziController::class, 'getAhligizi']);
