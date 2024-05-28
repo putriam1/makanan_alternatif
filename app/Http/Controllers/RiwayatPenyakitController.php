@@ -7,6 +7,12 @@ use App\Models\RiwayatPenyakit;
 
 class RiwayatPenyakitController extends Controller
 {
+    public function index()
+    {
+        $data = RiwayatPenyakit::with('pasien')->paginate(10);
+        return view('riwayat_penyakit.index', compact('data'));
+    }
+
     public function create()
     {
         return view('admin.riwayat-penyakit.create');
@@ -24,7 +30,17 @@ class RiwayatPenyakitController extends Controller
         $data->nama_penyakit = $request->penyakit; 
         $data->save();
 
-        return redirect('/ahli-gizi')->with('success', 'Data riwayat penyakit berhasil ditambahkan');
+        return redirect('/create-penyakit')->with('success', 'Data riwayat penyakit berhasil ditambahkan');
+    }
+
+    public function getRiwayatPenyakit($nomor_pasien){
+        $riwayat_penyakit = RiwayatPenyakit::where('id_pasien', $nomor_pasien)->pluck('nama_penyakit');
+
+        if ($riwayat_penyakit) {
+            return response()->json($riwayat_penyakit);
+        } else {
+            return response()->json(['message' => 'Pasien tidak ditemukan'], 404);
+        }
     }
 
     public function getRiwayat($id_pasien)

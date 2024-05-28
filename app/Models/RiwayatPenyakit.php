@@ -19,6 +19,6 @@ class RiwayatPenyakit extends Model
 
     public function pasien()
     {
-        return $this->hasMany(Pasien::class);
+        return $this->hasMany(Pasien::class, 'id_pasien');
     }
 }
