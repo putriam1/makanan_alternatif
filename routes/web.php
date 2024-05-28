@@ -9,6 +9,7 @@ use App\Http\Controllers\PasienController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RiwayatPenyakitController;
 use App\Http\Controllers\PDFController;
+use App\Models\AhliGizi;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -131,5 +132,6 @@ Route::get('/create-penyakit', [RiwayatPenyakitController::class, 'create'])
 Route::post('/tambah-penyakit', [RiwayatPenyakitController::class, 'store'])
     ->name('riwayat-penyakit.store');
 Route::get('/pasien/{nomor_pasien}', [PasienController::class, 'getPasien']);
+Route::get('/ahli_gizi/{nip}', [AhliGiziController::class, 'getAhliGizi']);
 
 Route::get('/riwayat-penyakit/{nomor_pasien}', [RiwayatPenyakitController::class, 'getRiwayatPenyakit']);

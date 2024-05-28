@@ -30,15 +30,16 @@
                                     <input type="text" class="form-control" id="id_pasien" name="id_pasien">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="id_ahligizi" class="form-label">Nama Ahli Gizi</label>
-                                    <select name="id_ahligizi" id="id_ahligizi" class="form-control">
-                                        <option value="">-- Pilih Ahli Gizi --</option>
-                                        @foreach ($ahligizi as $data_ahligizi)
-                                            <option value="{{ $data_ahligizi->nip }}" {{ old('id', $selected_ahligizi ?? '') == $data_ahligizi->nip ? 'selected' : '' }}>
-                                                {{ $data_ahligizi->nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <label for="nama" class="form-label">Nama Pasien</label>
+                                    <input type="text" class="form-control" id="nama" name="nama" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_ahli_gizi" class="form-label">NIP Ahli Gizi</label>
+                                    <input type="text" class="form-control" id="id_ahli_gizi" name="id_ahli_gizi">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nama_ahli_gizi" class="form-label">Nama Ahli Gizi</label>
+                                    <input type="text" class="form-control" id="nama_ahli_gizi" name="nama_ahli_gizi" readonly>
                                 </div>
                                 <div class="mb-3">
                                     <label for="id_riwayat_penyakit" class="form-label">Riwayat Penyakit</label>
@@ -255,6 +256,60 @@
             } else {
                 // Kosongkan tabel jika ID pasien kosong
                 $('#riwayat_penyakit').empty();
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#id_pasien').on('input', function() {
+            var id_pasien = $(this).val();
+            if (id_pasien) {
+                $.ajax({
+                    url: '/pasien/' + id_pasien,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if (data) {
+                            $('#nama').val(data.nama); // Perbarui ini untuk menggunakan kolom 'jk'
+                        } else {
+                            $('#nama').val('');
+                        }
+                    },
+                    error: function() {
+                        $('#nama').val('');
+                    }
+                });
+            } else {
+                $('#nama').val('');
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#id_ahli_gizi').on('input', function() {
+            var id_ahli_gizi = $(this).val();
+            if (id_ahli_gizi) {
+                $.ajax({
+                    url: '/ahli_gizi/' + id_ahli_gizi,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if (data) {
+                            $('#nama_ahli_gizi').val(data.nama); // Perbarui ini untuk menggunakan kolom 'jk'
+                        } else {
+                            $('#nama_ahli_gizi').val('');
+                        }
+                    },
+                    error: function() {
+                        $('#nama_ahli_gizi').val('');
+                    }
+                });
+            } else {
+                $('#nama_ahli_gizi').val('');
             }
         });
     });
