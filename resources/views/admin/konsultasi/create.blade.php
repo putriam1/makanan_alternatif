@@ -219,7 +219,6 @@
     <!-- /.content -->
 </div>
 
-<<<<<<< HEAD
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
@@ -323,6 +322,4 @@
     });
 </script>
 
-=======
->>>>>>> 8572e48382eebf95c2c0a716eba5001929b359c0
 @endsection
