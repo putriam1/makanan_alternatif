@@ -133,5 +133,4 @@ Route::post('/tambah-penyakit', [RiwayatPenyakitController::class, 'store'])
 Route::get('/pasien/{nomor_pasien}', [PasienController::class, 'getPasien']);
 Route::get('/ahli_gizi/{nip}', [AhliGiziController::class, 'getAhliGizi']);
 
-Route::get('/riwayat-penyakit/{id_pasien}', [RiwayatPenyakitController::class, 'getRiwayat']);
-Route::get('/ahli-gizi/{nip}', [AhliGiziController::class, 'getAhligizi']);
+Route::get('/riwayat-penyakit/{id_pasien}', [RiwayatPenyakitController::class, 'getRiwayatPenyakit']);

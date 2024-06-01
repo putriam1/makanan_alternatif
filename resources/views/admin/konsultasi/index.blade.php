@@ -41,18 +41,37 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $konsul->pasien->nama }}</td>
                                         <td>{{ $konsul->ahligizi->nama }}</td>
-                                        <td>{{ $konsul->makanan ? $konsul->makanan->nama_makanan : 'N/A' }}</td>
                                         <td>
-                                            @foreach ($konsul->makanan_alternative_by_category as $makanan_alternatif)
-                                                @foreach ($makanan_alternatif as $makanan)s
-                                                    ID Kategori: {{ $makanan['id_kategori'] }} - Nama Makanan: {{ $makanan['nama_makanan'] }}<br>
+                                            <div class="list-group">
+                                                @foreach ($konsul->group_makanan as $kategori => $makanan)
+                                                    <div class="w-100 text-bold">
+                                                        {{$loop->iteration}}. {{$kategori}}
+                                                    </div>
+                                                    <p class="mb-0 ml-3">
+                                                        @foreach ($makanan as $makanan)
+                                                            - {{$makanan}}<br>
+                                                        @endforeach
+                                                    </p>
                                                 @endforeach
-                                            @endforeach
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="list-group">
+                                                @foreach ($konsul->group_makanan_alternative as $kategori => $makanan_alternatif)
+                                                    <div class="w-100 text-bold">
+                                                        {{$loop->iteration}}. {{$kategori}}
+                                                    </div>
+                                                    <p class="mb-0 ml-3">
+                                                        @foreach ($makanan_alternatif as $makanan)
+                                                            - {{$makanan}}<br>
+                                                        @endforeach
+                                                    </p>
+                                                @endforeach
+                                            </div>
                                         </td>
                                         <td>{{ $konsul->tgl_konsultasi }}</td>
                                     </tr>
                                 @endforeach
-
                                     <!-- Tambahkan baris tabel lainnya di sini -->
                                 </tbody>
                             </table>

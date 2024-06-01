@@ -33,17 +33,7 @@ class RiwayatPenyakitController extends Controller
         return redirect('/riwayat_penyakit')->with('success', 'Data riwayat penyakit berhasil ditambahkan');
     }
 
-    public function getRiwayatPenyakit($nomor_pasien){
-        $riwayat_penyakit = RiwayatPenyakit::where('id_pasien', $nomor_pasien)->pluck('nama_penyakit');
-
-        if ($riwayat_penyakit) {
-            return response()->json($riwayat_penyakit);
-        } else {
-            return response()->json(['message' => 'Pasien tidak ditemukan'], 404);
-        }
-    }
-
-    public function getRiwayat($id_pasien)
+    public function getRiwayatPenyakit($id_pasien)
     {
         $riwayatpenyakit = RiwayatPenyakit::where('id_pasien', $id_pasien)->orderBy('id', 'desc')->get(['id', 'nama_penyakit']);
 

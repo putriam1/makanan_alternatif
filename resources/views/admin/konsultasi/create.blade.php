@@ -27,19 +27,19 @@
                                 @csrf
                                 <div class="mb-3">
                                     <label for="id_pasien" class="form-label">Nomor Pasien</label>
-                                    <input type="text" class="form-control" id="id_pasien" name="id_pasien">
+                                    <input type="text" class="form-control" id="id_pasien" name="id_pasien" value="{{ session('input_data.id_pasien') }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="nama" class="form-label">Nama Pasien</label>
-                                    <input type="text" class="form-control" id="nama" name="nama" readonly>
+                                    <input type="text" class="form-control" id="nama" name="nama" readonly value="{{ session('input_data.nama') }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="id_ahli_gizi" class="form-label">NIP Ahli Gizi</label>
-                                    <input type="text" class="form-control" id="id_ahli_gizi" name="id_ahli_gizi">
+                                    <input type="text" class="form-control" id="id_ahli_gizi" name="id_ahli_gizi" value="{{ session('input_data.id_ahli_gizi') }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="nama_ahli_gizi" class="form-label">Nama Ahli Gizi</label>
-                                    <input type="text" class="form-control" id="nama_ahli_gizi" name="nama_ahli_gizi" readonly>
+                                    <input type="text" class="form-control" id="nama_ahli_gizi" name="nama_ahli_gizi" readonly value="{{ session('input_data.nama_ahli_gizi') }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="id_riwayat_penyakit" class="form-label">Riwayat Penyakit</label>
@@ -195,7 +195,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="tgl_konsultasi" class="form-label">Tanggal Konsultasi</label>
-                                    <input type="date" class="form-control" id="tgl_konsultasi" name="tgl_konsultasi" value="{{ old('tgl_konsultasi', $tgl_konsultasi) }}">
+                                    <input type="date" class="form-control" id="tgl_konsultasi" name="tgl_konsultasi" value="{{ session('input_data.tgl_konsultasi') }}">
                                 </div>
                                 <a href="{{ route('konsul.index') }}" class="btn btn-secondary">Kembali</a>
                                 <button type="submit" class="btn btn-primary">Tambah</button>
@@ -215,46 +215,8 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function(){
-        $('#id_pasien').on('input', function() {
-            var id_pasien = $(this).val();
-            if (id_pasien) {
-                $.ajax({
-                    url: '/riwayat-penyakit/' + id_pasien,
-                    type: "GET",
-                    dataType: "json",
-                    success: function(data) {
-                        if (data && Array.isArray(data)) {
-                            // Hapus semua baris sebelum menambahkan yang baru
-                            $('#riwayat_penyakit').empty();
 
-                            if (data.length > 0) {
-                                data.forEach(function(penyakit) {
-                                    // Tambahkan baris-baris data ke dalam tabel
-                                    $('#riwayat_penyakit').append('<tr><td><input type="checkbox" name="riwayat_penyakit[]" value="' + penyakit.id + '"></td><td>' + penyakit.nama_penyakit + '</td></tr>');
-                                });
-                            } else {
-                                // Tampilkan pesan jika tidak ada riwayat penyakit
-                                $('#riwayat_penyakit').append('<tr><td>Tidak Ada Riwayat Penyakit</td></tr>');
-                            }
-                        } else {
-                            // Kosongkan tabel jika data tidak valid
-                            $('#riwayat_penyakit').empty();
-                        }
-                    },
-                    error: function() {
-                        // Kosongkan tabel jika terjadi kesalahan
-                        $('#riwayat_penyakit').empty();
-                    }
-                });
-            } else {
-                // Kosongkan tabel jika ID pasien kosong
-                $('#riwayat_penyakit').empty();
-            }
-        });
-    });
-</script>
+<script src="{{ asset('js/riwayat_penyakit.js')}}"></script>
 
 <script type="text/javascript">
     $(document).ready(function(){
