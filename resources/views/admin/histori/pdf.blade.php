@@ -1,4 +1,4 @@
-<!-- resources/views/admin/histori/pdf_single.blade.php -->
+<!-- resources/views/admin/histori/pdf.blade.php -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,7 +19,13 @@
             margin-bottom: 20px;
         }
         .item {
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+        }
+        ul {
+            margin-top: 5px;
+        }
+        ul li {
+            margin-bottom: 2px;
         }
     </style>
 </head>
@@ -27,30 +33,40 @@
     <div class="content-wrapper">
         <div class="title">Detail Konsultasi</div>
         <div class="item">
-            <strong>Pasien:</strong> {{ $pasien }} <br>
-            <strong>Ahli Gizi:</strong> {{ $ahli_gizi }} <br>
-            <strong>Riwayat Penyakit:</strong> {{ $riwayat }} <br>
-            <strong>Makanan:</strong> {{ $makanan }} <br>
-            <strong>Makanan Alternatif:</strong> 
-            @if(is_array($makanan_alternative) && count($makanan_alternative) > 0)
-                <ul>
-                    @foreach($makanan_alternative as $alt)
-                        <li>
-                            <strong>Nama:</strong> {{ $alt['nama_makanan_alternative'] }},
-                            <strong>Protein:</strong> {{ $alt['protein'] }},
-                            <strong>Lemak:</strong> {{ $alt['lemak'] }},
-                            <strong>Karbo:</strong> {{ $alt['karbo'] }}
-                        </li>
-                    @endforeach
-                </ul>
+            <strong>Pasien :</strong> {{ $pasien }} <br>
+            <strong>Ahli Gizi :</strong> {{ $ahli_gizi }} <br>
+            <strong>Riwayat Penyakit :</strong> 
+            <ul>
+                @foreach($riwayat as $item)
+                    Nama Penyakit : {{ $item['nama_penyakit'] }} <br>
+                @endforeach
+            </ul>
+            <strong>Makanan :</strong> 
+            <ul>
+                @foreach($makanan as $item)
+                    Nama Makanan : {{ $item['nama_makanan'] }} ||
+                    Protein : {{ $item['protein'] }} ||
+                    Lemak : {{ $item['lemak'] }} ||
+                    Karbohidrat : {{ $item['karbo'] }} <br>
+                @endforeach
+            </ul>
+            <strong>Makanan Alternatif:</strong>
+            @if(count($makanan_alternative) > 0)
+                @foreach($makanan_alternative as $group)
+                    <ul>
+                        @foreach ($group as $alt)
+                            Nama Makanan : {{ $alt['nama_makanan_alternative'] }} ||
+                            Protein : {{ $alt['protein'] }} ||
+                            Lemak : {{ $alt['lemak'] }} ||
+                            Karbohidrat : {{ $alt['karbo'] }} <br>
+                        @endforeach
+                    </ul>
+                @endforeach
             @else
                 Data tidak tersedia
             @endif
-            <br>
             <strong>Tanggal Konsultasi:</strong> {{ $tanggal_konsultasi }} <br>
         </div>
     </div>
 </body>
-
-
 </html>

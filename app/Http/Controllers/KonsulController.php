@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kategori;
 use App\Models\Konsul;
 use App\Models\Makanan;
+use App\Models\RiwayatPenyakit;
 use App\Models\MakananAlternative;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,20 @@ class KonsulController extends Controller
     public function index()
     {
         $data = Konsul::paginate(10);
+
+        // Riwayat Penyakit
+        $group_penyakit = [];
+        $data->each(function ($item) {
+            $penyakit = explode(',', $item->id_riwayat_penyakit);
+            foreach ($penyakit as $id_penyakit) {
+                $penyakit = RiwayatPenyakit::find($id_penyakit);
+                if ($penyakit) {
+                    // Jika ditemukan, tambahkan nama penyakit ke dalam array
+                    $group_penyakit[] = $penyakit->nama_penyakit;
+                }
+            }
+            $item->group_penyakit = $group_penyakit;
+        });
 
         // Makanan
         $group_makanan = [];
