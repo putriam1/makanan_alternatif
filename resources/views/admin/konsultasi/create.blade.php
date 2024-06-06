@@ -54,22 +54,20 @@
                                     <label for="kode_makanan_sayur" class="form-label">Makanan Sayur</label>
                                     <select name="kode_makanan_sayur" id="kode_makanan_sayur" class="form-control">
                                         <option value="">-- Pilih Makanan --</option>
-                                        @foreach ($makananSayur as $data_makanan)
+                                        @foreach ($makanan_sayur as $data_makanan)
                                             <option value="{{ $data_makanan->kode_makanan }}" {{ old('kode_makanan', $selected_makanan_sayur ?? '') == $data_makanan->kode_makanan ? 'selected' : '' }}>
                                                 {{ $data_makanan->nama_makanan }} || Protein : {{ $data_makanan->protein }} || Lemak : {{ $data_makanan->lemak }} || Karbohidrat : {{ $data_makanan->karbohidrat }}
                                             </option>
                                         @endforeach
                                     </select>
                                     <div class="mt-2">
-                                        <button type="submit" formaction="{{ route('konsul.cek-protein')}}" class="btn btn-info">Cek Protein</button>
-                                        <button type="submit" formaction="{{ route('konsul.cek-lemak')}}" class="btn btn-success">Cek Lemak</button>
-                                        <button type="submit" formaction="{{ route('konsul.cek-karbohidrat')}}" class="btn btn-warning">Cek Karbohidrat</button>
+                                        <button type="submit" formaction="{{ route('konsul.cek-makanan-sayur')}}" class="btn btn-info">Cek Makanan</button>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="kode_makanan_alternative_sayur" class="form-label">Makanan Alternatif Sayur</label>
                                     <table class="table">
-                                        @foreach ( $makananAlternativeSayur as $makanan )
+                                        @foreach ( $rekomendasi_makanan_alternative_sayur as $makanan )
                                             <tr>
                                                 <td><input type="checkbox" name="kode_makanan_alternative_sayur[]" value="{{ $makanan['kode_makanan'] }}" 
                                                     @if (is_array($selected_makanan_alternative_sayur) && in_array($makanan->kode_makanan, $selected_makanan_alternative_sayur))
@@ -90,22 +88,20 @@
                                     <label for="kode_makanan_lauk" class="form-label">Makanan Lauk</label>
                                     <select name="kode_makanan_lauk" id="kode_makanan_lauk" class="form-control">
                                         <option value="">-- Pilih Makanan --</option>
-                                        @foreach ($makananLauk as $data_makanan)
+                                        @foreach ($makanan_lauk as $data_makanan)
                                             <option value="{{ $data_makanan->kode_makanan }}" {{ old('kode_makanan', $selected_makanan_lauk ?? '') == $data_makanan->kode_makanan ? 'selected' : '' }}>
                                                 {{ $data_makanan->nama_makanan }} || Protein : {{ $data_makanan->protein }} || Lemak : {{ $data_makanan->lemak }} || Karbohidrat : {{ $data_makanan->karbohidrat }}
                                             </option>
                                         @endforeach
                                     </select>
                                     <div class="mt-2">
-                                        <button type="submit" formaction="{{ route('konsul.cek-protein-lauk')}}" class="btn btn-info">Cek Protein</button>
-                                        <button type="submit" formaction="{{ route('konsul.cek-lemak-lauk')}}" class="btn btn-success">Cek Lemak</button>
-                                        <button type="submit" formaction="{{ route('konsul.cek-karbohidrat-lauk')}}" class="btn btn-warning">Cek Karbohidrat</button>
+                                        <button type="submit" formaction="{{ route('konsul.cek-makanan-lauk')}}" class="btn btn-info">Cek Makanan</button>    
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="kode_makanan_alternative_lauk" class="form-label">Makanan Alternatif Lauk</label>
                                     <table class="table">
-                                        @foreach ( $makananAlternativeLauk as $makanan )
+                                        @foreach ( $rekomendasi_makanan_alternative_lauk as $makanan )
                                             <tr>
                                                 <td><input type="checkbox" name="kode_makanan_alternative_lauk[]" value="{{ $makanan['kode_makanan'] }}" 
                                                     @if (is_array($selected_makanan_alternative_lauk) && in_array($makanan->kode_makanan, $selected_makanan_alternative_lauk))
@@ -126,22 +122,20 @@
                                     <label for="kode_makanan_buah" class="form-label">Makanan Buah</label>
                                     <select name="kode_makanan_buah" id="kode_makanan_buah" class="form-control">
                                         <option value="">-- Pilih Makanan --</option>
-                                        @foreach ($makananBuah as $data_makanan)
+                                        @foreach ($makanan_buah as $data_makanan)
                                             <option value="{{ $data_makanan->kode_makanan }}" {{ old('kode_makanan', $selected_makanan_buah ?? '') == $data_makanan->kode_makanan ? 'selected' : '' }}>
                                                 {{ $data_makanan->nama_makanan }} || Protein : {{ $data_makanan->protein }} || Lemak : {{ $data_makanan->lemak }} || Karbohidrat : {{ $data_makanan->karbohidrat }}
                                             </option>
                                         @endforeach
                                     </select>
                                     <div class="mt-2">
-                                        <button type="submit" formaction="{{ route('konsul.cek-protein-buah')}}" class="btn btn-info">Cek Protein</button>
-                                        <button type="submit" formaction="{{ route('konsul.cek-lemak-buah')}}" class="btn btn-success">Cek Lemak</button>
-                                        <button type="submit" formaction="{{ route('konsul.cek-karbohidrat-buah')}}" class="btn btn-warning">Cek Karbohidrat</button>
+                                        <button type="submit" formaction="{{ route('konsul.cek-makanan-buah')}}" class="btn btn-info">Cek Makanan</button>    
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="kode_makanan_alternative_buah" class="form-label">Makanan Alternatif Buah</label>
                                     <table class="table">
-                                        @foreach ( $makananAlternativeBuah as $makanan )
+                                        @foreach ( $rekomendasi_makanan_alternative_buah as $makanan )
                                             <tr>
                                                 <td><input type="checkbox" name="kode_makanan_alternative_buah[]" value="{{ $makanan['kode_makanan'] }}" 
                                                     @if (is_array($selected_makanan_alternative_buah) && in_array($makanan->kode_makanan, $selected_makanan_alternative_buah))
@@ -162,22 +156,20 @@
                                     <label for="kode_makanan_pokok" class="form-label">Makanan Pokok</label>
                                     <select name="kode_makanan_pokok" id="kode_makanan_pokok" class="form-control">
                                         <option value="">-- Pilih Makanan --</option>
-                                        @foreach ($makananPokok as $data_makanan)
+                                        @foreach ($makanan_pokok as $data_makanan)
                                             <option value="{{ $data_makanan->kode_makanan }}" {{ old('kode_makanan', $selected_makanan_pokok ?? '') == $data_makanan->kode_makanan ? 'selected' : '' }}>
                                                 {{ $data_makanan->nama_makanan }} || Protein : {{ $data_makanan->protein }} || Lemak : {{ $data_makanan->lemak }} || Karbohidrat : {{ $data_makanan->karbohidrat }}
                                             </option>
                                         @endforeach
                                     </select>
                                     <div class="mt-2">
-                                        <button type="submit" formaction="{{ route('konsul.cek-protein-pokok')}}" class="btn btn-info">Cek Protein</button>
-                                        <button type="submit" formaction="{{ route('konsul.cek-lemak-pokok')}}" class="btn btn-success">Cek Lemak</button>
-                                        <button type="submit" formaction="{{ route('konsul.cek-karbohidrat-pokok')}}" class="btn btn-warning">Cek Karbohidrat</button>
+                                        <button type="submit" formaction="{{ route('konsul.cek-makanan-pokok')}}" class="btn btn-info">Cek Makanan</button>    
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="kode_makanan_alternative_pokok" class="form-label">Makanan Alternatif Pokok</label>
                                     <table class="table">
-                                        @foreach ( $makananAlternativePokok as $makanan )
+                                        @foreach ( $rekomendasi_makanan_alternative_pokok as $makanan )
                                             <tr>
                                                 <td><input type="checkbox" name="kode_makanan_alternative_pokok[]" value="{{ $makanan['kode_makanan'] }}" 
                                                     @if (is_array($selected_makanan_alternative_pokok) && in_array($makanan->kode_makanan, $selected_makanan_alternative_pokok))

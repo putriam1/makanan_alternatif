@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kategori;
 use App\Models\Konsul;
 use App\Models\Makanan;
 use App\Models\RiwayatPenyakit;
@@ -78,519 +77,184 @@ class KonsulController extends Controller
     public function create()
     {
         session()->forget('input_data');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeBuah = MakananAlternative::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_sayur = Makanan::where('id_kategori', 1)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_lauk  = Makanan::where('id_kategori', 2)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_buah  = Makanan::where('id_kategori', 4)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_pokok = Makanan::where('id_kategori', 3)->orderBy('kode_makanan', 'asc')->get();
+        $rekomendasi_makanan_alternative_sayur = MakananAlternative::where('id_kategori', 1)->orderBy('kode_makanan', 'asc')->get();
+        $rekomendasi_makanan_alternative_lauk  = MakananAlternative::where('id_kategori', 2)->orderBy('kode_makanan', 'asc')->get();
+        $rekomendasi_makanan_alternative_buah  = MakananAlternative::where('id_kategori', 4)->orderBy('kode_makanan', 'asc')->get();
+        $rekomendasi_makanan_alternative_pokok = MakananAlternative::where('id_kategori', 3)->orderBy('kode_makanan', 'asc')->get();
         return view('admin.konsultasi.create', compact(
-            'makananBuah', 'makananSayur', 'makananLauk', 'makananPokok', 'makananAlternativeBuah', 'makananAlternativeSayur', 'makananAlternativeLauk', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', old('id_makanan_sayur'))
-            ->with('selected_makanan_lauk', old('id_makanan_lauk'))
-            ->with('selected_makanan_buah', old('id_makanan_buah'))
+            'makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+            ->with('selected_makanan_sayur', old('id_makanan_sayur'   ))
+            ->with('selected_makanan_lauk' , old('id_makanan_lauk   '))
+            ->with('selected_makanan_buah' , old('id_makanan_buah'  ))
             ->with('selected_makanan_pokok', old('id_makanan_pokok'))
             ->with('selected_makanan_alternative_sayur', old('id_makanan_alternative_sayur'))
-            ->with('selected_makanan_alternative_lauk', old('id_makanan_alternative_lauk'))
-            ->with('selected_makanan_alternative_buah', old('id_makanan_alternative_buah'))
+            ->with('selected_makanan_alternative_lauk' , old('id_makanan_alternative_lauk'))
+            ->with('selected_makanan_alternative_buah' , old('id_makanan_alternative_buah'))
             ->with('selected_makanan_alternative_pokok', old('id_makanan_alternative_pokok'));
     }
 
-    public function cekProteinSayur(Request $request)
+    private function euclideanDistance($makanan, $makanan_alternative)
+    {
+        return sqrt(
+            pow($makanan->lemak - $makanan_alternative->lemak, 2) +
+            pow($makanan->protein - $makanan_alternative->protein, 2) +
+            pow($makanan->karbohidrat - $makanan_alternative->karbohidrat, 2)
+        );
+    }
+
+    public function cekMakanan($referensi_makanan_id, $kategori_id)
+    {
+        $referensi_makanan = Makanan::where('kode_makanan', $referensi_makanan_id)->where('id_kategori', $kategori_id)->first();
+        
+        $makanan_alternative = MakananAlternative::where('id_kategori', $kategori_id)->get();
+
+        if($referensi_makanan) {
+            $similarities = [];
+            foreach ($makanan_alternative as $makanan) {
+                $score = $this->euclideanDistance($referensi_makanan, $makanan);
+                $similarities[$makanan->kode_makanan] = $score;
+            }
+
+            asort($similarities);
+
+            $rekomendasi_makanan_id = array_slice(array_keys($similarities), 0, 3);
+            $rekomendasi_makanan = MakananAlternative::whereIn('kode_makanan', $rekomendasi_makanan_id)->get();
+        } else {
+            $rekomendasi_makanan = $makanan_alternative;
+        }
+
+        return $rekomendasi_makanan;
+    }
+
+    public function cekMakananSayur(Request $request)
     {
         $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
+        $makanan_sayur = Makanan::where('id_kategori', 1)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_lauk  = Makanan::where('id_kategori', 2)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_buah  = Makanan::where('id_kategori', 4)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_pokok = Makanan::where('id_kategori', 3)->orderBy('kode_makanan', 'asc')->get();
+        $rekomendasi_makanan_sayur = $request->kode_makanan_sayur;
+        $rekomendasi_makanan_lauk  = $request->kode_makanan_lauk;
+        $rekomendasi_makanan_buah  = $request->kode_makanan_buah;
+        $rekomendasi_makanan_pokok = $request->kode_makanan_pokok; 
+        $rekomendasi_makanan_alternative_sayur = $this->cekMakanan($rekomendasi_makanan_sayur, 1);
+        $rekomendasi_makanan_alternative_lauk  = $this->cekMakanan($rekomendasi_makanan_lauk, 2);
+        $rekomendasi_makanan_alternative_buah  = $this->cekMakanan($rekomendasi_makanan_buah, 4);
+        $rekomendasi_makanan_alternative_pokok = $this->cekMakanan($rekomendasi_makanan_pokok, 3);
         $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
+        $makanan_alternative_lauk  = $request->kode_makanan_alternative_lauk ?? [];
+        $makanan_alternative_buah  = $request->kode_makanan_alternative_buah ?? [];
         $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $protein_makanan = Makanan::where('kode_makanan', $kode_makanan_sayur)->pluck('protein');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativeSayur = MakananAlternative::where('protein', '<', $protein_makanan)
-            ->where('id_kategori', $idKategoriSayur)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeBuah = MakananAlternative::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
 
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
+        return view('admin.konsultasi.create', 
+            compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+            ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+            ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+            ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+            ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
             ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
+            ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+            ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
             ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
     }
 
-    public function cekKarbohidratSayur(Request $request)
+    public function cekMakananLauk(Request $request)
     {
         $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
+        $makanan_sayur = Makanan::where('id_kategori', 1)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_lauk  = Makanan::where('id_kategori', 2)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_buah  = Makanan::where('id_kategori', 4)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_pokok = Makanan::where('id_kategori', 3)->orderBy('kode_makanan', 'asc')->get();
+        $rekomendasi_makanan_sayur = $request->kode_makanan_sayur;
+        $rekomendasi_makanan_lauk  = $request->kode_makanan_lauk;
+        $rekomendasi_makanan_buah  = $request->kode_makanan_buah;
+        $rekomendasi_makanan_pokok = $request->kode_makanan_pokok; 
+        $rekomendasi_makanan_alternative_sayur = $this->cekMakanan($rekomendasi_makanan_sayur, 1);
+        $rekomendasi_makanan_alternative_lauk  = $this->cekMakanan($rekomendasi_makanan_lauk, 2);
+        $rekomendasi_makanan_alternative_buah  = $this->cekMakanan($rekomendasi_makanan_buah, 4);
+        $rekomendasi_makanan_alternative_pokok = $this->cekMakanan($rekomendasi_makanan_pokok, 3);
         $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
+        $makanan_alternative_lauk  = $request->kode_makanan_alternative_lauk ?? [];
+        $makanan_alternative_buah  = $request->kode_makanan_alternative_buah ?? [];
         $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $karbo_makanan = Makanan::where('kode_makanan', $kode_makanan_sayur)->pluck('karbohidrat');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativeSayur = MakananAlternative::where('karbohidrat', '<', $karbo_makanan)
-            ->where('id_kategori', $idKategoriSayur)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeBuah = MakananAlternative::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
 
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
+        return view('admin.konsultasi.create', 
+            compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+            ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+            ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+            ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+            ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
             ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
+            ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+            ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
             ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
     }
 
-    public function cekLemakSayur(Request $request)
+    public function cekMakananBuah(Request $request)
     {
         $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
+        $makanan_sayur = Makanan::where('id_kategori', 1)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_lauk  = Makanan::where('id_kategori', 2)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_buah  = Makanan::where('id_kategori', 4)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_pokok = Makanan::where('id_kategori', 3)->orderBy('kode_makanan', 'asc')->get();
+        $rekomendasi_makanan_sayur = $request->kode_makanan_sayur;
+        $rekomendasi_makanan_lauk  = $request->kode_makanan_lauk;
+        $rekomendasi_makanan_buah  = $request->kode_makanan_buah;
+        $rekomendasi_makanan_pokok = $request->kode_makanan_pokok; 
+        $rekomendasi_makanan_alternative_sayur = $this->cekMakanan($rekomendasi_makanan_sayur, 1);
+        $rekomendasi_makanan_alternative_lauk  = $this->cekMakanan($rekomendasi_makanan_lauk, 2);
+        $rekomendasi_makanan_alternative_buah  = $this->cekMakanan($rekomendasi_makanan_buah, 4);
+        $rekomendasi_makanan_alternative_pokok = $this->cekMakanan($rekomendasi_makanan_pokok, 3);
         $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
+        $makanan_alternative_lauk  = $request->kode_makanan_alternative_lauk ?? [];
+        $makanan_alternative_buah  = $request->kode_makanan_alternative_buah ?? [];
         $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $lemak_makanan = Makanan::where('kode_makanan', $kode_makanan_sayur)->pluck('lemak');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativeSayur = MakananAlternative::where('lemak', '<', $lemak_makanan)
-            ->where('id_kategori', $idKategoriSayur)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeBuah = MakananAlternative::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
 
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
+        return view('admin.konsultasi.create', 
+            compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+            ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+            ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+            ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+            ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
             ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
+            ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+            ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
             ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
     }
 
-    public function cekProteinLauk(Request $request)
+    public function cekMakananPokok(Request $request)
     {
         $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
+        $makanan_sayur = Makanan::where('id_kategori', 1)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_lauk  = Makanan::where('id_kategori', 2)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_buah  = Makanan::where('id_kategori', 4)->orderBy('kode_makanan', 'asc')->get();
+        $makanan_pokok = Makanan::where('id_kategori', 3)->orderBy('kode_makanan', 'asc')->get();
+        $rekomendasi_makanan_sayur = $request->kode_makanan_sayur;
+        $rekomendasi_makanan_lauk  = $request->kode_makanan_lauk;
+        $rekomendasi_makanan_buah  = $request->kode_makanan_buah;
+        $rekomendasi_makanan_pokok = $request->kode_makanan_pokok; 
+        $rekomendasi_makanan_alternative_sayur = $this->cekMakanan($rekomendasi_makanan_sayur, 1);
+        $rekomendasi_makanan_alternative_lauk  = $this->cekMakanan($rekomendasi_makanan_lauk, 2);
+        $rekomendasi_makanan_alternative_buah  = $this->cekMakanan($rekomendasi_makanan_buah, 4);
+        $rekomendasi_makanan_alternative_pokok = $this->cekMakanan($rekomendasi_makanan_pokok, 3);
         $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
+        $makanan_alternative_lauk  = $request->kode_makanan_alternative_lauk ?? [];
+        $makanan_alternative_buah  = $request->kode_makanan_alternative_buah ?? [];
         $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $protein_makanan = Makanan::where('kode_makanan', $kode_makanan_lauk)->pluck('protein');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativeLauk = MakananAlternative::where('protein', '<', $protein_makanan)
-            ->where('id_kategori', $idKategoriLauk)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeBuah = MakananAlternative::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
 
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
+        return view('admin.konsultasi.create', 
+            compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+            ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+            ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+            ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+            ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
             ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
-    }
-
-    public function cekKarbohidratLauk(Request $request)
-    {
-        $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
-        $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
-        $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $karbo_makanan = Makanan::where('kode_makanan', $kode_makanan_lauk)->pluck('karbohidrat');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativeLauk = MakananAlternative::where('karbohidrat', '<', $karbo_makanan)
-            ->where('id_kategori', $idKategoriLauk)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeBuah = MakananAlternative::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
-    }
-
-    public function cekLemakLauk(Request $request)
-    {
-        $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
-        $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
-        $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $lemak_makanan = Makanan::where('kode_makanan', $kode_makanan_lauk)->pluck('lemak');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativeLauk = MakananAlternative::where('lemak', '<', $lemak_makanan)
-            ->where('id_kategori', $idKategoriLauk)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeBuah = MakananAlternative::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
-    }
-
-    public function cekProteinBuah(Request $request)
-    {
-        $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
-        $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
-        $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $protein_makanan = Makanan::where('kode_makanan', $kode_makanan_lauk)->pluck('protein');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativeBuah = MakananAlternative::where('protein', '<', $protein_makanan)
-            ->where('id_kategori', $idKategoriBuah)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
-    }
-
-    public function cekKarbohidratBuah(Request $request)
-    {
-        $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
-        $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
-        $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $karbo_makanan = Makanan::where('kode_makanan', $kode_makanan_buah)->pluck('karbohidrat');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativeBuah = MakananAlternative::where('karbohidrat', '<', $karbo_makanan)
-            ->where('id_kategori', $idKategoriBuah)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
-    }
-
-    public function cekLemakBuah(Request $request)
-    {
-        $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
-        $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
-        $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $lemak_makanan = Makanan::where('kode_makanan', $kode_makanan_buah)->pluck('lemak');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativeBuah = MakananAlternative::where('lemak', '<', $lemak_makanan)
-            ->where('id_kategori', $idKategoriBuah)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativePokok = MakananAlternative::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
-    }
-
-    public function cekProteinPokok(Request $request)
-    {
-        $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
-        $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
-        $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $protein_makanan = Makanan::where('kode_makanan', $kode_makanan_pokok)->pluck('protein');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativePokok = MakananAlternative::where('protein', '<', $protein_makanan)
-            ->where('id_kategori', $idKategoriPokok)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeBuah = MakananAlternative::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
-    }
-
-    public function cekKarbohidratPokok(Request $request)
-    {
-        $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
-        $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
-        $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $karbo_makanan = Makanan::where('kode_makanan', $kode_makanan_pokok)->pluck('karbohidrat');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativePokok = MakananAlternative::where('karbohidrat', '<', $karbo_makanan)
-            ->where('id_kategori', $idKategoriPokok)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeBuah = MakananAlternative::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
-    }
-
-    public function cekLemakPokok(Request $request)
-    {
-        $request->session()->put('input_data', $request->all());
-        $kode_makanan_sayur  = $request->kode_makanan_sayur;
-        $kode_makanan_lauk  = $request->kode_makanan_lauk;
-        $kode_makanan_buah  = $request->kode_makanan_buah;
-        $kode_makanan_pokok  = $request->kode_makanan_pokok;
-        $makanan_alternative_sayur = $request->kode_makanan_alternative_sayur ?? [];
-        $makanan_alternative_lauk = $request->kode_makanan_alternative_lauk ?? [];
-        $makanan_alternative_buah = $request->kode_makanan_alternative_buah ?? [];
-        $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
-        $lemak_makanan = Makanan::where('kode_makanan', $kode_makanan_pokok)->pluck('lemak');
-        $idKategoriSayur = Kategori::where('nama_kategori', 'Sayur')->pluck('id')->first();
-        $idKategoriLauk = Kategori::where('nama_kategori', 'Lauk')->pluck('id')->first();
-        $idKategoriBuah = Kategori::where('nama_kategori', 'Buah')->pluck('id')->first();
-        $idKategoriPokok = Kategori::where('nama_kategori', 'Makanan Pokok')->pluck('id')->first();
-        $makananAlternativePokok = MakananAlternative::where('lemak', '<', $lemak_makanan)
-            ->where('id_kategori', $idKategoriPokok)
-            ->orderBy('kode_makanan', 'asc')
-            ->get();
-        $makananAlternativeLauk = MakananAlternative::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeBuah = MakananAlternative::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananAlternativeSayur = MakananAlternative::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-
-        $makananSayur = Makanan::where('id_kategori', $idKategoriSayur)->orderBy('kode_makanan', 'asc')->get();
-        $makananLauk = Makanan::where('id_kategori', $idKategoriLauk)->orderBy('kode_makanan', 'asc')->get();
-        $makananBuah = Makanan::where('id_kategori', $idKategoriBuah)->orderBy('kode_makanan', 'asc')->get();
-        $makananPokok = Makanan::where('id_kategori', $idKategoriPokok)->orderBy('kode_makanan', 'asc')->get();
-
-        return view('admin.konsultasi.create', compact(
-            'makananSayur', 'makananAlternativeSayur', 'makananLauk', 'makananBuah', 'makananPokok', 'makananAlternativeLauk', 'makananAlternativeBuah', 'makananAlternativePokok'))
-            ->with('selected_makanan_sayur', $kode_makanan_sayur)
-            ->with('selected_makanan_lauk', $kode_makanan_lauk)
-            ->with('selected_makanan_buah', $kode_makanan_buah)
-            ->with('selected_makanan_pokok', $kode_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk', $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah', $makanan_alternative_buah)
+            ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+            ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
             ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
     }
 

@@ -66,7 +66,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('makanan.index') }}" class="nav-link {{ request()->is('makanan') ? 'active' : '' }}">
+              <a href="{{ route('makanan.index') }}" class="nav-link {{ request()->is('*makanan') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-list"></i>
                 <p>
                   List Makanan
@@ -74,7 +74,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('makanan-alternative.index') }}" class="nav-link {{ request()->is('makanan-alternative') ? 'active' : '' }}" class="nav-link {{ request()->is('makanan-alternatif*') ? 'active' : '' }}" class="nav-link {{ request()->is('makanan-alternatif*') }}">
+              <a href="{{ route('makanan-alternative.index') }}" class="nav-link {{ request()->is('*makanan-alternative') ? 'active' : '' }}" class="nav-link {{ request()->is('makanan-alternatif*') ? 'active' : '' }}" class="nav-link {{ request()->is('makanan-alternatif*') }}">
                 <i class="nav-icon fas fa-utensils"></i>
                 <p>
                   Makanan Alternatif
@@ -82,7 +82,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('konsul.index') }}" class="nav-link {{ request()->is('konsul*') ? 'active' : '' }}">
+              <a href="{{ route('konsul.index') }}" class="nav-link {{ request()->is('*konsul*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-stethoscope"></i>
                 <p>
                   Konsultasi
@@ -90,7 +90,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('histori.index') }}" class="nav-link {{ request()->is('histori*') ? 'active' : '' }}">
+              <a href="{{ route('histori.index') }}" class="nav-link {{ request()->is('*histori*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-history"></i>
                 <p>
                   History

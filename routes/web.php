@@ -96,34 +96,6 @@ Route::get('/create-makanan-alternative', [MakananAlternativeController::class, 
 Route::post('/store-makanan-alternative', [MakananAlternativeController::class, 'store'])
     ->name('makanan-alternative.store');
 
-Route::post('/cek-protein', [KonsulController::class, 'cekProteinSayur'])
-    ->name('konsul.cek-protein');
-Route::post('/cek-karbohidrat', [KonsulController::class, 'cekKarbohidratSayur'])
-    ->name('konsul.cek-karbohidrat');
-Route::post('/cek-lemak', [KonsulController::class, 'cekLemakSayur'])
-    ->name('konsul.cek-lemak');
-
-Route::post('/cek-protein-lauk', [KonsulController::class, 'cekProteinLauk'])
-    ->name('konsul.cek-protein-lauk');
-Route::post('/cek-karbohidrat-lauk', [KonsulController::class, 'cekKarbohidratLauk'])
-    ->name('konsul.cek-karbohidrat-lauk');
-Route::post('/cek-lemak-lauk', [KonsulController::class, 'cekLemakLauk'])
-    ->name('konsul.cek-lemak-lauk');
-
-Route::post('/cek-protein-buah', [KonsulController::class, 'cekProteinBuah'])
-    ->name('konsul.cek-protein-buah');
-Route::post('/cek-karbohidrat-buah', [KonsulController::class, 'cekKarbohidratBuah'])
-    ->name('konsul.cek-karbohidrat-buah');
-Route::post('/cek-lemak-buah', [KonsulController::class, 'cekLemakBuah'])
-    ->name('konsul.cek-lemak-buah');
-
-Route::post('/cek-protein-pokok', [KonsulController::class, 'cekProteinPokok'])
-    ->name('konsul.cek-protein-pokok');
-Route::post('/cek-karbohidrat-pokok', [KonsulController::class, 'cekKarbohidratPokok'])
-    ->name('konsul.cek-karbohidrat-pokok');
-Route::post('/cek-lemak-pokok', [KonsulController::class, 'cekLemakPokok'])
-    ->name('konsul.cek-lemak-pokok');
-
 Route::get('/riwayat_penyakit', [RiwayatPenyakitController::class, 'index'])
     ->name('riwayat-penyakit.index');
 Route::get('/create-penyakit', [RiwayatPenyakitController::class, 'create'])
@@ -134,3 +106,12 @@ Route::get('/pasien/{nomor_pasien}', [PasienController::class, 'getPasien']);
 Route::get('/ahli_gizi/{nip}', [AhliGiziController::class, 'getAhliGizi']);
 
 Route::get('/riwayat-penyakit/{id_pasien}', [RiwayatPenyakitController::class, 'getRiwayatPenyakit']);
+
+Route::post('/cek-makanan-sayur', [KonsulController::class, 'cekMakananSayur'])
+    ->name('konsul.cek-makanan-sayur');
+Route::post('/cek-makanan-lauk', [KonsulController::class, 'cekMakananLauk'])
+    ->name('konsul.cek-makanan-lauk');
+Route::post('/cek-makanan-buah', [KonsulController::class, 'cekMakananBuah'])
+    ->name('konsul.cek-makanan-buah');
+Route::post('/cek-makanan-pokok', [KonsulController::class, 'cekMakananPokok'])
+    ->name('konsul.cek-makanan-pokok');
