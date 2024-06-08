@@ -31,7 +31,7 @@
                                     <th>NO</th>
                                     <th>PASIEN</th>
                                     <th>AHLI GIZI</th>
-                                    <th>RIWAYAT PENYAKIT</th>
+                                    <!-- <th>RIWAYAT PENYAKIT</th> -->
                                     <th>MAKANAN</th>
                                     <th>MAKANAN ALTERNATIF</th>
                                     <th>TANGGAL KONSULTASI</th>
@@ -42,7 +42,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $konsul->pasien->nama }}</td>
                                         <td>{{ $konsul->ahligizi->nama }}</td>
-                                        <td>
+                                        <!-- <td>
                                             <div class="list-group">
                                                 @foreach ($konsul->group_penyakit as $penyakit)
                                                     <div class="w-100">
@@ -50,7 +50,7 @@
                                                     </div>
                                                 @endforeach
                                             </div>
-                                        </td>
+                                        </td> -->
                                         <td>
                                             <div class="list-group">
                                                 @foreach ($konsul->group_makanan as $kategori => $makanan)

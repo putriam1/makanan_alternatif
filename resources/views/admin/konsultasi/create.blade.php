@@ -41,14 +41,14 @@
                                     <label for="nama_ahli_gizi" class="form-label">Nama Ahli Gizi</label>
                                     <input type="text" class="form-control" id="nama_ahli_gizi" name="nama_ahli_gizi" readonly value="{{ session('input_data.nama_ahli_gizi') }}">
                                 </div>
-                                <div class="mb-3">
+                                <!-- <div class="mb-3">
                                     <label for="id_riwayat_penyakit" class="form-label">Riwayat Penyakit</label>
                                     <table class="table">
                                         <tbody id="riwayat_penyakit">
 
                                         </tbody>
                                     </table>
-                                </div>
+                                </div> -->
                                 <hr>
                                 <div class="mb-3">
                                     <label for="kode_makanan_sayur" class="form-label">Makanan Sayur</label>

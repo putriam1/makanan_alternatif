@@ -16,22 +16,22 @@ class KonsulController extends Controller
         $data = Konsul::paginate(10);
 
         // Riwayat Penyakit
-        $group_penyakit = [];
-        $data->each(function ($item) {
-            $penyakit = explode(',', $item->id_riwayat_penyakit);
-            foreach ($penyakit as $id_penyakit) {
-                $penyakit = RiwayatPenyakit::find($id_penyakit);
-                if ($penyakit) {
-                    // Jika ditemukan, tambahkan nama penyakit ke dalam array
-                    $group_penyakit[] = $penyakit->nama_penyakit;
-                }
-            }
-            $item->group_penyakit = $group_penyakit;
-        });
+        // $group_penyakit = [];
+        // $data->each(function ($item) {
+        //     $penyakit = explode(',', $item->id_riwayat_penyakit);
+        //     foreach ($penyakit as $id_penyakit) {
+        //         $penyakit = RiwayatPenyakit::find($id_penyakit);
+        //         if ($penyakit) {
+        //             // Jika ditemukan, tambahkan nama penyakit ke dalam array
+        //             $group_penyakit[] = $penyakit->nama_penyakit;
+        //         }
+        //     }
+        //     $item->group_penyakit = $group_penyakit;
+        // });
 
         // Makanan
         $group_makanan = [];
-        $data->each(function ($item) {
+        $data->each(function ($item) use (&$group_makanan) {
             $makanan = explode(',', $item->kode_makanan);
             foreach ($makanan as $kode_makanan) {
                 $makanan = Makanan::find($kode_makanan);
@@ -43,7 +43,7 @@ class KonsulController extends Controller
                 }
             }
             $item->group_makanan = $group_makanan;
-        });
+        });        
 
         // Makanan Alternatif
         $group_makanan_alternative = [];
@@ -263,7 +263,7 @@ class KonsulController extends Controller
         $data = new Konsul;
         $data->id_pasien = $request->id_pasien;
         $data->id_ahligizi = $request->id_ahli_gizi;
-        $data->id_riwayat_penyakit = implode(',', $request->riwayat_penyakit);
+        // $data->id_riwayat_penyakit = implode(',', $request->riwayat_penyakit);
         $data->kode_makanan = implode(',', [
             $request->kode_makanan_sayur,
             $request->kode_makanan_lauk,
