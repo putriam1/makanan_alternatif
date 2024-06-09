@@ -22,15 +22,15 @@ class PDFController extends Controller
             $data = [
                 'pasien' => $konsul->pasien->nama ?? 'Data tidak tersedia',
                 'ahli_gizi' => $konsul->ahligizi->nama ?? 'Data tidak tersedia',
-                'riwayat' => collect(explode(',', $konsul->id_riwayat_penyakit))
-                    ->map(function ($id_riwayat_penyakit) {
-                        $riwayat_penyakit = RiwayatPenyakit::where('id', $id_riwayat_penyakit)->first();
-                        return [
-                            'nama_penyakit' => $riwayat_penyakit->nama_penyakit,
-                        ];
-                    })
-                    ->filter()
-                    ->toArray(),
+                // 'riwayat' => collect(explode(',', $konsul->id_riwayat_penyakit))
+                //     ->map(function ($id_riwayat_penyakit) {
+                //         $riwayat_penyakit = RiwayatPenyakit::where('id', $id_riwayat_penyakit)->first();
+                //         return [
+                //             'nama_penyakit' => $riwayat_penyakit->nama_penyakit,
+                //         ];
+                //     })
+                //     ->filter()
+                //     ->toArray(),
                 'makanan' => collect(explode(',', $konsul->kode_makanan))
                     ->map(function ($kodeMakanan) {
                         $makanan = Makanan::where('kode_makanan', $kodeMakanan)->first();
@@ -70,7 +70,6 @@ class PDFController extends Controller
 
             Log::info('Makanan: ', $data['makanan']); // Tambahkan ini untuk memeriksa struktur $makanan
             Log::info('Makanan Alternative: ', $data['makanan_alternative']); // Tambahkan ini untuk memeriksa struktur $makanan_alternative
-            Log::info('Riwayat Penyakit: ', $data['riwayat']); // Tambahkan ini untuk memeriksa struktur $riwayat
         
             // Load view pdf.blade.php dengan data konsultasi yang diambil
             $pdf = PDF::loadView('admin.histori.pdf', $data);

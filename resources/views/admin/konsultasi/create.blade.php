@@ -35,11 +35,20 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="id_ahli_gizi" class="form-label">NIP Ahli Gizi</label>
-                                    <input type="text" class="form-control" id="id_ahli_gizi" name="id_ahli_gizi" value="{{ session('input_data.id_ahli_gizi') }}">
+                                    <input type="text" class="form-control" id="id_ahli_gizi" name="id_ahli_gizi" 
+                                    @if (Auth::check() && Auth::user()-> role == 'ahligizi')
+                                        readonly
+                                        value = "{{ $nip_ahli_gizi }}"
+                                    @endif 
+                                    value="{{ session('input_data.id_ahli_gizi') }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="nama_ahli_gizi" class="form-label">Nama Ahli Gizi</label>
-                                    <input type="text" class="form-control" id="nama_ahli_gizi" name="nama_ahli_gizi" readonly value="{{ session('input_data.nama_ahli_gizi') }}">
+                                    <input type="text" class="form-control" id="nama_ahli_gizi" name="nama_ahli_gizi" readonly 
+                                    @if (Auth::check() && Auth::user()-> role == 'ahligizi')
+                                        value ="{{ $nama_ahli_gizi }}"
+                                    @endif
+                                    value="{{ session('input_data.nama_ahli_gizi') }}">
                                 </div>
                                 <!-- <div class="mb-3">
                                     <label for="id_riwayat_penyakit" class="form-label">Riwayat Penyakit</label>
@@ -49,7 +58,6 @@
                                         </tbody>
                                     </table>
                                 </div> -->
-                                <hr>
                                 <div class="mb-3">
                                     <label for="kode_makanan_sayur" class="form-label">Makanan Sayur</label>
                                     <select name="kode_makanan_sayur" id="kode_makanan_sayur" class="form-control">

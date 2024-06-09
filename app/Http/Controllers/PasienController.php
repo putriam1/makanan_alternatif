@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pasien;
-use App\Models\RiwayatPenyakit;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PasienController extends Controller
 {
@@ -28,6 +29,7 @@ class PasienController extends Controller
         $data->alamat = $request->alamat;
         $data->jk = $request->jk;
         $data->save();
+
 
         return redirect('/pasien');
     }

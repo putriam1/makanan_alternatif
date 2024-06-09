@@ -11,13 +11,11 @@ class Chef extends Model
 
     protected $table = 'chef';
 
-    public $primaryKey = 'nip';
-
     public $keyType = 'string';
 
     protected $fillable = [
         'nip',
-        'name',
+        'nama',
         'no_tlp',
         'alamat',
     ];

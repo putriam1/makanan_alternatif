@@ -11,8 +11,6 @@ class AhliGizi extends Model
 
     protected $table = 'ahli_gizi';
 
-    protected $primaryKey = 'nip';
-
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -24,6 +22,6 @@ class AhliGizi extends Model
 
     public function konsul()
     {
-        return $this->hasMany(Konsul::class);
+        return $this->hasMany(Konsul::class, 'id_ahligizi', 'nip');
     }
 }

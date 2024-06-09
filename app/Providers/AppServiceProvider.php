@@ -3,8 +3,12 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Models\User;
-use App\Observers\PenggunaObserver;
+use App\Models\Pasien;
+use App\Observers\PasienObserver;
+use App\Models\AhliGizi;
+use App\Observers\AhliGiziObserver;
+use App\Models\Chef;
+use App\Observers\ChefObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
       public function boot()
     {
-        User::observe(PenggunaObserver::class);
+        Pasien::observe(PasienObserver::class);
+        AhliGizi::observe(AhliGiziObserver::class);
+        Chef::observe(ChefObserver::class);
     }
 }

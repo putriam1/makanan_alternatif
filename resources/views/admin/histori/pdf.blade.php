@@ -35,12 +35,12 @@
         <div class="item">
             <strong>Pasien :</strong> {{ $pasien }} <br>
             <strong>Ahli Gizi :</strong> {{ $ahli_gizi }} <br>
-            <strong>Riwayat Penyakit :</strong> 
+            {{-- <strong>Riwayat Penyakit :</strong> 
             <ul>
                 @foreach($riwayat as $item)
                     Nama Penyakit : {{ $item['nama_penyakit'] }} <br>
                 @endforeach
-            </ul>
+            </ul> --}}
             <strong>Makanan :</strong> 
             <ul>
                 @foreach($makanan as $item)

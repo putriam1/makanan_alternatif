@@ -21,7 +21,9 @@
                     <div class="card mt-3">
                         <div class="card-header d-flex align-items-center">
                             <h3 class="card-title">Data Konsultasi</h3>
-                            <a href="{{ route('konsul.create') }}" class="btn btn-primary ml-auto btn-sm"><i class="fas fa-plus fa-sm"></i> Tambah</a>
+                            @if (Auth::check() && Auth::user()-> role == 'ahligizi')
+                                <a href="{{ route('konsul.create') }}" class="btn btn-primary ml-auto btn-sm"><i class="fas fa-plus fa-sm"></i> Tambah</a>
+                            @endif
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
@@ -42,15 +44,6 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $konsul->pasien->nama }}</td>
                                         <td>{{ $konsul->ahligizi->nama }}</td>
-                                        <!-- <td>
-                                            <div class="list-group">
-                                                @foreach ($konsul->group_penyakit as $penyakit)
-                                                    <div class="w-100">
-                                                        - {{$penyakit}}
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </td> -->
                                         <td>
                                             <div class="list-group">
                                                 @foreach ($konsul->group_makanan as $kategori => $makanan)
@@ -58,9 +51,7 @@
                                                         {{$loop->iteration}}. {{$kategori}}
                                                     </div>
                                                     <p class="mb-0 ml-3">
-                                                        @foreach ($makanan as $makanan)
-                                                            - {{$makanan}}<br>
-                                                        @endforeach
+                                                        - {{$makanan}}<br>
                                                     </p>
                                                 @endforeach
                                             </div>
