@@ -44,7 +44,7 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
-        <a class="nav-link" href="" role="button" title="logout">
+        <a class="nav-link" href="{{ route('login') }}" role="button" title="logout">
             <img src="../../dist/img/log-out.png" alt="logout" width="25" style="margin-top: -5px">
         </a>
       </li>

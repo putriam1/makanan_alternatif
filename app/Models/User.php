@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Illuminate\Support\Facades\Hash;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    protected $table = 'pengguna';
 
     /**
      * The attributes that are mass assignable.
@@ -18,11 +19,29 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+            'name',
+            'password',
+            'no_hp',
+            'alamat',
+            'jenkel',
+            'role', 
     ];
+    protected static function boot()
+    {
+        parent::boot();
 
+        static::creating(function ($user) {
+            if ($user->isDirty('password')) {
+                $user->password = Hash::make($user->password);
+            }
+        });
+
+        static::updating(function ($user) {
+            if ($user->isDirty('password')) {
+                $user->password = Hash::make($user->password);
+            }
+        });
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

@@ -25,6 +25,7 @@
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         <!-- Add icons to the links using the .nav-icon class
              with font-awesome or any other icon font library -->
+             @if (Auth::check() && Auth::user()-> role == 'admin')
              <li class="nav-item">
               <a href="/admin" class="nav-link {{ Request::is('admin') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-home"></i>
@@ -57,6 +58,8 @@
                 </p>
               </a>
             </li>
+            @endif
+            @if (Auth::check() && Auth::user()-> role == 'admin')
             <li class="nav-item">
               <a href="{{ route('riwayat-penyakit.index') }}" class="nav-link {{ request()->is('*penyakit') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-users"></i>
@@ -81,6 +84,8 @@
                 </p>
               </a>
             </li>
+            @endif
+            @if (Auth::check() && Auth::user()-> role == 'ahli_gizi')
             <li class="nav-item">
               <a href="{{ route('konsul.index') }}" class="nav-link {{ request()->is('*konsul*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-stethoscope"></i>
@@ -89,6 +94,8 @@
                 </p>
               </a>
             </li>
+            @endif
+            @if (Auth::check() && Auth::user()-> role == 'ahli_gizi')
             <li class="nav-item">
               <a href="{{ route('histori.index') }}" class="nav-link {{ request()->is('*histori*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-history"></i>
@@ -97,6 +104,7 @@
                 </p>
               </a>
             </li>
+            @endif
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

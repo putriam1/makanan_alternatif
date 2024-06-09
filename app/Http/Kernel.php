@@ -53,6 +53,10 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $routeMiddleware = [
+        'encrypt.password' => \App\Http\Middleware\EncryptPassword::class,
+        'admin' => \App\Http\Middleware\Admin::class,
+        'ahli_gizi' => \App\Http\Middleware\AhliGizi::class,
+        'Chef' => \App\Http\Middleware\Chef::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,

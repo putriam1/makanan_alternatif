@@ -9,8 +9,10 @@ use App\Http\Controllers\PasienController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RiwayatPenyakitController;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\PenggunaController;
 use App\Models\AhliGizi;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,9 +33,14 @@ Route::get('/', function () {
 //     return view('welcome');
 // });
 
-Route::get('/login', function () {
-    return view('auth/login');
-});
+
+Route::post('/pengguna', [PenggunaController::class, 'store'])->middleware('encrypt.password');
+Route::put('/pengguna/{pengguna}', [PenggunaController::class, 'update'])->middleware('encrypt.password');
+
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
+
+
 
 Route::get('/generate-pdf/{id}', [PDFController::class, 'generatePDF'])->name('generate.pdf');
 

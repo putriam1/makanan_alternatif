@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 
 class AhliGiziController extends Controller
 {
+    public function __construct(){
+        $this -> middleware('admin');
+    }
     public function index()
     {
         $data = AhliGizi::paginate(10);
