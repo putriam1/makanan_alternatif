@@ -37,12 +37,21 @@ Route::group(['middleware' => 'admin'], function () {
         return view('dashboard/admin');
     });
 
+
+Route::get('/dashboard-pasien', function () {
+    return view('dashboard/pasien');
+});
+
+Route::post('/pengguna', [PenggunaController::class, 'store'])->middleware('encrypt.password');
+Route::put('/pengguna/{pengguna}', [PenggunaController::class, 'update'])->middleware('encrypt.password');
+
     Route::get('/ahli-gizi', [AhliGiziController::class, 'index'])
     ->name('ahli-gizi.index');
     Route::get('/create-ahli-gizi', [AhliGiziController::class, 'create'])
         ->name('ahli-gizi.create');
     Route::post('/store-ahli-gizi', [AhliGiziController::class, 'store'])
         ->name('ahli-gizi.store');
+
 
     Route::get('/ubah-status-ahli-gizi/{id}', [AhliGiziController::class, 'ubahStatus'])
         ->name('ahli-gizi.ubah-status-ahli-gizi');

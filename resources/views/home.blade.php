@@ -123,8 +123,9 @@
     <div class="navbar">
         <a style="color: black; font-size: 20px;" >
         <img src="{{ asset('assets/dist/img/rs.png') }}" class="img-circle elevation-3" alt="logo rumah sakit" >
-        <img src="{{ asset('assets/dist/img/kk.png') }}" class="img-circle elevation-3" alt="logo rkesehatan kedokteran" >
-        <b >Bhayangkara </b>KEDIRI 
+
+        <img src="{{ asset('assets/dist/img/kk.png') }}" class="img-circle elevation-3" alt="logo kesehatan kedokteran" >
+        <b >Bayangkara </b>KEDIRI 
         </a>
     </div>
 
