@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AhliGizi
+class Pasien
 {
     /**
      * Handle an incoming request.
@@ -17,12 +17,11 @@ class AhliGizi
      */
     public function handle(Request $request, Closure $next)
     {
-        if(!(Auth::user()->role == 'ahligizi')){
+        if(!(Auth::user()->role == 'pasein')){
             return redirect()->back();
         }
         {
             return $next($request);
         }
-        
     }
 }

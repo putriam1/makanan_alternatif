@@ -4,16 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Konsul;
 use App\Models\Makanan;
-use App\Models\RiwayatPenyakit;
+use App\Models\AhliGizi;
 use App\Models\MakananAlternative;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class KonsulController extends Controller
 {
 
     public function index()
     {
-        $data = Konsul::paginate(10);
+        if (Auth::user()->role == 'ahligizi') {
+            $nip = AhliGizi::where('nama', Auth::user()->name)->first()->nip;
+            $data = Konsul::where('id_ahligizi', $nip)->paginate(10);
+        } else {
+            $data = Konsul::paginate(10);
+        }
 
         // Riwayat Penyakit
         // $group_penyakit = [];
@@ -39,11 +45,13 @@ class KonsulController extends Controller
                     // Jika ditemukan, tambahkan nama makanan ke dalam array
                     $nama_kategori = $makanan->kategori->nama_kategori;
                     $nama_makanan = $makanan->nama_makanan;
-                    $group_makanan[$nama_kategori][] = $nama_makanan;
+                    $group_makanan[$nama_kategori] = $nama_makanan;
                 }
             }
             $item->group_makanan = $group_makanan;
         });        
+
+        // dd($group_makanan);
 
         // Makanan Alternatif
         $group_makanan_alternative = [];
@@ -71,6 +79,8 @@ class KonsulController extends Controller
             $item->group_makanan_alternative = $group_makanan_alternative;
         });
 
+        // dd($group_makanan_alternative);
+
         return view('admin.konsultasi.index', compact('data'));
     }
 
@@ -85,16 +95,32 @@ class KonsulController extends Controller
         $rekomendasi_makanan_alternative_lauk  = MakananAlternative::where('id_kategori', 2)->orderBy('kode_makanan', 'asc')->get();
         $rekomendasi_makanan_alternative_buah  = MakananAlternative::where('id_kategori', 4)->orderBy('kode_makanan', 'asc')->get();
         $rekomendasi_makanan_alternative_pokok = MakananAlternative::where('id_kategori', 3)->orderBy('kode_makanan', 'asc')->get();
-        return view('admin.konsultasi.create', compact(
-            'makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
-            ->with('selected_makanan_sayur', old('id_makanan_sayur'   ))
-            ->with('selected_makanan_lauk' , old('id_makanan_lauk   '))
-            ->with('selected_makanan_buah' , old('id_makanan_buah'  ))
-            ->with('selected_makanan_pokok', old('id_makanan_pokok'))
-            ->with('selected_makanan_alternative_sayur', old('id_makanan_alternative_sayur'))
-            ->with('selected_makanan_alternative_lauk' , old('id_makanan_alternative_lauk'))
-            ->with('selected_makanan_alternative_buah' , old('id_makanan_alternative_buah'))
-            ->with('selected_makanan_alternative_pokok', old('id_makanan_alternative_pokok'));
+
+        if (Auth::user()->role == 'ahligizi') {
+            $nip_ahli_gizi  = AhliGizi::where('nama', Auth::user()->name)->first()->nip;
+            $nama_ahli_gizi = AhliGizi::where('nama', Auth::user()->name)->first()->nama;
+            return view('admin.konsultasi.create', compact(
+                'nip_ahli_gizi', 'nama_ahli_gizi', 'makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+                ->with('selected_makanan_sayur', old('id_makanan_sayur'))
+                ->with('selected_makanan_lauk' , old('id_makanan_lauk'))
+                ->with('selected_makanan_buah' , old('id_makanan_buah'))
+                ->with('selected_makanan_pokok', old('id_makanan_pokok'))
+                ->with('selected_makanan_alternative_sayur', old('id_makanan_alternative_sayur'))
+                ->with('selected_makanan_alternative_lauk' , old('id_makanan_alternative_lauk'))
+                ->with('selected_makanan_alternative_buah' , old('id_makanan_alternative_buah'))
+                ->with('selected_makanan_alternative_pokok', old('id_makanan_alternative_pokok'));
+        } else {
+            return view('admin.konsultasi.create', compact(
+                'makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+                ->with('selected_makanan_sayur', old('id_makanan_sayur'))
+                ->with('selected_makanan_lauk' , old('id_makanan_lauk'))
+                ->with('selected_makanan_buah' , old('id_makanan_buah'))
+                ->with('selected_makanan_pokok', old('id_makanan_pokok'))
+                ->with('selected_makanan_alternative_sayur', old('id_makanan_alternative_sayur'))
+                ->with('selected_makanan_alternative_lauk' , old('id_makanan_alternative_lauk'))
+                ->with('selected_makanan_alternative_buah' , old('id_makanan_alternative_buah'))
+                ->with('selected_makanan_alternative_pokok', old('id_makanan_alternative_pokok'));
+        }
     }
 
     private function euclideanDistance($makanan, $makanan_alternative)
@@ -150,16 +176,32 @@ class KonsulController extends Controller
         $makanan_alternative_buah  = $request->kode_makanan_alternative_buah ?? [];
         $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
 
-        return view('admin.konsultasi.create', 
-            compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
-            ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
-            ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
-            ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
-            ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        if (Auth::user()->role == 'ahligizi') {
+            $nip_ahli_gizi  = AhliGizi::where('nama', Auth::user()->name)->first()->nip;
+            $nama_ahli_gizi = AhliGizi::where('nama', Auth::user()->name)->first()->nama;
+            return view('admin.konsultasi.create', 
+                compact('nip_ahli_gizi', 'nama_ahli_gizi', 'makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+                ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+                ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+                ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+                ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
+                ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
+                ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+                ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
+                ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        } else {
+            return view('admin.konsultasi.create', 
+                compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+                ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+                ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+                ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+                ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
+                ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
+                ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+                ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
+                ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        }
+        
     }
 
     public function cekMakananLauk(Request $request)
@@ -182,16 +224,31 @@ class KonsulController extends Controller
         $makanan_alternative_buah  = $request->kode_makanan_alternative_buah ?? [];
         $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
 
-        return view('admin.konsultasi.create', 
-            compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
-            ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
-            ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
-            ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
-            ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        if (Auth::user()->role == 'ahligizi') {
+            $nip_ahli_gizi  = AhliGizi::where('nama', Auth::user()->name)->first()->nip;
+            $nama_ahli_gizi = AhliGizi::where('nama', Auth::user()->name)->first()->nama;
+            return view('admin.konsultasi.create', 
+                compact('nip_ahli_gizi', 'nama_ahli_gizi', 'makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+                ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+                ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+                ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+                ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
+                ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
+                ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+                ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
+                ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        } else {
+            return view('admin.konsultasi.create', 
+                compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+                ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+                ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+                ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+                ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
+                ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
+                ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+                ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
+                ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        }
     }
 
     public function cekMakananBuah(Request $request)
@@ -214,16 +271,31 @@ class KonsulController extends Controller
         $makanan_alternative_buah  = $request->kode_makanan_alternative_buah ?? [];
         $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
 
-        return view('admin.konsultasi.create', 
-            compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
-            ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
-            ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
-            ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
-            ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        if (Auth::user()->role == 'ahligizi') {
+            $nip_ahli_gizi  = AhliGizi::where('nama', Auth::user()->name)->first()->nip;
+            $nama_ahli_gizi = AhliGizi::where('nama', Auth::user()->name)->first()->nama;
+            return view('admin.konsultasi.create', 
+                compact('nip_ahli_gizi', 'nama_ahli_gizi', 'makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+                ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+                ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+                ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+                ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
+                ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
+                ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+                ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
+                ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        } else {
+            return view('admin.konsultasi.create', 
+                compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+                ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+                ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+                ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+                ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
+                ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
+                ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+                ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
+                ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        }
     }
 
     public function cekMakananPokok(Request $request)
@@ -246,16 +318,31 @@ class KonsulController extends Controller
         $makanan_alternative_buah  = $request->kode_makanan_alternative_buah ?? [];
         $makanan_alternative_pokok = $request->kode_makanan_alternative_pokok ?? [];
 
-        return view('admin.konsultasi.create', 
-            compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
-            ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
-            ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
-            ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
-            ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
-            ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
-            ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
-            ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
-            ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        if (Auth::user()->role == 'ahligizi') {
+            $nip_ahli_gizi  = AhliGizi::where('nama', Auth::user()->name)->first()->nip;
+            $nama_ahli_gizi = AhliGizi::where('nama', Auth::user()->name)->first()->nama;
+            return view('admin.konsultasi.create', 
+                compact('nip_ahli_gizi', 'nama_ahli_gizi', 'makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+                ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+                ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+                ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+                ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
+                ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
+                ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+                ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
+                ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        } else {
+            return view('admin.konsultasi.create', 
+                compact('makanan_sayur', 'makanan_lauk', 'makanan_buah', 'makanan_pokok', 'rekomendasi_makanan_alternative_sayur', 'rekomendasi_makanan_alternative_lauk', 'rekomendasi_makanan_alternative_buah', 'rekomendasi_makanan_alternative_pokok'))
+                ->with('selected_makanan_sayur', $rekomendasi_makanan_sayur)
+                ->with('selected_makanan_lauk' , $rekomendasi_makanan_lauk)
+                ->with('selected_makanan_buah' , $rekomendasi_makanan_buah)
+                ->with('selected_makanan_pokok', $rekomendasi_makanan_pokok)
+                ->with('selected_makanan_alternative_sayur', $makanan_alternative_sayur)
+                ->with('selected_makanan_alternative_lauk' , $makanan_alternative_lauk)
+                ->with('selected_makanan_alternative_buah' , $makanan_alternative_buah)
+                ->with('selected_makanan_alternative_pokok', $makanan_alternative_pokok);
+        }
     }
 
     public function store(Request $request)

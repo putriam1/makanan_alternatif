@@ -26,12 +26,12 @@ class Konsul extends Model
 
     public function pasien()
     {
-        return $this->belongsTo(Pasien::class, 'id_pasien');
+        return $this->belongsTo(Pasien::class, 'id_pasien', 'nomor_pasien');
     }
 
     public function ahligizi()
     {
-        return $this->belongsTo(AhliGizi::class, 'id_ahligizi');
+        return $this->belongsTo(AhliGizi::class, 'id_ahligizi', 'nip');
     }
 
     public function riwayatpenyakit()

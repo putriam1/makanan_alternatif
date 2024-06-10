@@ -79,10 +79,11 @@
 
     <hr>
     <div class="content-wrapper">
-        <div class="title">Detail Konsultasi</div>
+        <div class="title">Berikut Adalah Detail Hasil Konsultasi Anda</div>
         <div class="item">
             <strong>Pasien :</strong> {{ $pasien }} <br>
             <strong>Ahli Gizi :</strong> {{ $ahli_gizi }} <br>
+
         </div>
         <div class="item">
             <h2>Makanan</h2>
@@ -98,6 +99,23 @@
         </div>
         <div class="item">
             <h2>Makanan Alternatif</h2>
+
+            {{-- <strong>Riwayat Penyakit :</strong> 
+            <ul>
+                @foreach($riwayat as $item)
+                    Nama Penyakit : {{ $item['nama_penyakit'] }} <br>
+                @endforeach
+            </ul> --}}
+            <strong>Makanan :</strong> 
+            <ul>
+                @foreach($makanan as $item)
+                    Nama Makanan : {{ $item['nama_makanan'] }} ||
+                    Protein : {{ $item['protein'] }} ||
+                    Lemak : {{ $item['lemak'] }} ||
+                    Karbohidrat : {{ $item['karbo'] }} <br>
+                @endforeach
+            </ul>
+            <strong>Makanan Alternatif:</strong>
             @if(count($makanan_alternative) > 0)
                 @foreach($makanan_alternative as $group)
                     <ul>

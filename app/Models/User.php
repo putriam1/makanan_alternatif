@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Facades\Hash;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
     protected $table = 'pengguna';
 
     /**
@@ -25,23 +25,8 @@ class User extends Authenticatable
             'alamat',
             'jenkel',
             'role', 
+            'remember_token',
     ];
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($user) {
-            if ($user->isDirty('password')) {
-                $user->password = Hash::make($user->password);
-            }
-        });
-
-        static::updating(function ($user) {
-            if ($user->isDirty('password')) {
-                $user->password = Hash::make($user->password);
-            }
-        });
-    }
     /**
      * The attributes that should be hidden for serialization.
      *

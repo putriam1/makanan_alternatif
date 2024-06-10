@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Konsul;
+use App\Models\Pasien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -26,10 +28,16 @@ class LoginController extends Controller
         Log::info('Attempting login with credentials:', $credentials);
 
         if (Auth::attempt($credentials)) {
-            Log::info('Login successful for user:', ['name' => $request->input('name')]);
-            // Authenticated successfully
-            $request->session()->regenerate();
-            return redirect()->intended('/admin')->with('success', 'Login successful!');
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                return redirect()->intended('/admin')->with('success', 'Login successful!');
+            } elseif ($user->role === 'pasien') {
+                return redirect()->route('histori.index')->with('success', 'Login successful!');
+            } elseif ($user->role === 'ahligizi') {
+                return redirect()->route('konsul.index')->with('success', 'Login successful!');
+            } elseif ($user->role === 'chef') {
+                return redirect()->route('konsul.index')->with('success', 'Login successful!');
+            } 
         }
 
         // Authentication failed

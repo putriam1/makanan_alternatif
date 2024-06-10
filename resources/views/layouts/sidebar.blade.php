@@ -77,7 +77,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('makanan-alternative.index') }}" class="nav-link {{ request()->is('*makanan-alternative') ? 'active' : '' }}" class="nav-link {{ request()->is('makanan-alternatif*') ? 'active' : '' }}" class="nav-link {{ request()->is('makanan-alternatif*') }}">
+              <a href="{{ route('makanan-alternative.index') }}" class="nav-link {{ request()->is('*makanan-alternative') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-utensils"></i>
                 <p>
                   Makanan Alternatif
@@ -85,7 +85,7 @@
               </a>
             </li>
             @endif
-            @if (Auth::check() && Auth::user()-> role == 'ahli_gizi')
+            @if (Auth::check() && Auth::user()-> role == 'ahligizi' || Auth::check() && Auth::user()-> role == 'chef')
             <li class="nav-item">
               <a href="{{ route('konsul.index') }}" class="nav-link {{ request()->is('*konsul*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-stethoscope"></i>
@@ -95,7 +95,7 @@
               </a>
             </li>
             @endif
-            @if (Auth::check() && Auth::user()-> role == 'ahli_gizi')
+            @if (Auth::check() && Auth::user()-> role == 'ahligizi' || Auth::check() && Auth::user()-> role == 'pasien')
             <li class="nav-item">
               <a href="{{ route('histori.index') }}" class="nav-link {{ request()->is('*histori*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-history"></i>

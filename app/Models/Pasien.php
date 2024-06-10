@@ -11,8 +11,6 @@ class Pasien extends Model
 
     protected $table = 'pasien';
 
-    protected $primaryKey = 'nomor_pasien';
-
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -30,6 +28,7 @@ class Pasien extends Model
 
     public function konsul()
     {
-        return $this->hasMany(Konsul::class);
+        return $this->hasMany(Konsul::class, 'id_pasien', 'nomor_pasien');
     }
+
 }

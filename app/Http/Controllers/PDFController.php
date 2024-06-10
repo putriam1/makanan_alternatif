@@ -15,7 +15,6 @@ class PDFController extends Controller
         Log::info('Attempting to generate PDF for Konsul ID: ' . $id); // Log pernyataan awal
         ini_set('max_execution_time', 300); // 300 detik = 5 menit
 
-
         try {
             // Ambil data konsultasi dari database berdasarkan ID
             $konsul = Konsul::findOrFail($id);
@@ -28,14 +27,14 @@ class PDFController extends Controller
                             'nama_makanan' => $makanan->nama_makanan,
                             'protein' => $makanan->protein,
                             'lemak' => $makanan->lemak,
-                            'karbo' => $makanan->karbohidrat,
+                            'karbohidrat' => $makanan->karbohidrat,
                         ];
                     }
                     return null;
                 })
                 ->filter() // Menghilangkan nilai null dari koleksi
                 ->toArray(); // Mengubah koleksi ke dalam bentuk array
-            
+
             $makanan_alternative = collect(explode('|', $konsul->kode_makanan_alternative))
                 ->map(function ($group) {
                     return collect(explode(',', $group))
@@ -46,7 +45,7 @@ class PDFController extends Controller
                                     'nama_makanan_alternative' => $makanan->nama_makanan,
                                     'protein' => $makanan->protein,
                                     'lemak' => $makanan->lemak,
-                                    'karbo' => $makanan->karbohidrat,
+                                    'karbohidrat' => $makanan->karbohidrat,
                                 ];
                             }
                             return null;
