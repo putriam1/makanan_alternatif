@@ -34,6 +34,10 @@ Route::get('/', function () {
 // });
 
 
+Route::get('/dashboard-pasien', function () {
+    return view('dashboard/pasien');
+});
+
 Route::post('/pengguna', [PenggunaController::class, 'store'])->middleware('encrypt.password');
 Route::put('/pengguna/{pengguna}', [PenggunaController::class, 'update'])->middleware('encrypt.password');
 
