@@ -90,7 +90,7 @@
             @if(count($makanan) > 0)
                 <ul>
                     @foreach($makanan as $item)
-                        <li>{{ $item['nama_makanan'] }} - Protein: {{ $item['protein'] }}g, Lemak: {{ $item['lemak'] }}g, Karbohidrat: {{ $item['karbo'] }}g</li>
+                        <li>{{ $item['nama_makanan'] }} - Protein: {{ $item['protein'] }}g, Lemak: {{ $item['lemak'] }}g, Karbohidrat: {{ $item['karbohidrat'] }}g</li>
                     @endforeach
                 </ul>
             @else
@@ -112,7 +112,7 @@
                     Nama Makanan : {{ $item['nama_makanan'] }} ||
                     Protein : {{ $item['protein'] }} ||
                     Lemak : {{ $item['lemak'] }} ||
-                    Karbohidrat : {{ $item['karbo'] }} <br>
+                    Karbohidrat : {{ $item['karbohidrat'] }} <br>
                 @endforeach
             </ul>
             <strong>Makanan Alternatif:</strong>
@@ -120,7 +120,7 @@
                 @foreach($makanan_alternative as $group)
                     <ul>
                         @foreach ($group as $alt)
-                            <li>Nama Makanan: {{ $alt['nama_makanan_alternative'] }} - Protein: {{ $alt['protein'] }}g, Lemak: {{ $alt['lemak'] }}g, Karbohidrat: {{ $alt['karbo'] }}g</li>
+                            <li>Nama Makanan: {{ $alt['nama_makanan_alternative'] }} - Protein: {{ $alt['protein'] }}g, Lemak: {{ $alt['lemak'] }}g, Karbohidrat: {{ $alt['karbohidrat'] }}g</li>
                         @endforeach
                     </ul>
                 @endforeach

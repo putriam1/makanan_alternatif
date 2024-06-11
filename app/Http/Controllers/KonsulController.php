@@ -142,17 +142,24 @@ class KonsulController extends Controller
             $similarities = [];
             foreach ($makanan_alternative as $makanan) {
                 $score = $this->euclideanDistance($referensi_makanan, $makanan);
-                $similarities[$makanan->kode_makanan] = $score;
+                $similarities[$makanan->nama_makanan] = $score;
             }
-
+            
             asort($similarities);
 
-            $rekomendasi_makanan_id = array_slice(array_keys($similarities), 0, 3);
-            $rekomendasi_makanan = MakananAlternative::whereIn('kode_makanan', $rekomendasi_makanan_id)->get();
+            // dd($similarities);
+
+            $rekomendasi_makanan_nama = array_slice(array_keys($similarities), 0, 3);
+            // dd($rekomendasi_makanan_nama);
+            $rekomendasi_makanan = MakananAlternative::whereIn('nama_makanan', $rekomendasi_makanan_nama)->get();
+            $rekomendasi_makanan = $rekomendasi_makanan->sortBy(function($item) use ($similarities) {
+                return $similarities[$item->nama_makanan];
+                })->values();
+            // dd($rekomendasi_makanan);
         } else {
             $rekomendasi_makanan = $makanan_alternative;
         }
-
+        // dd($rekomendasi_makanan);
         return $rekomendasi_makanan;
     }
 

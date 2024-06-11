@@ -95,7 +95,7 @@
               </a>
             </li>
             @endif
-            @if (Auth::check() && Auth::user()-> role == 'ahligizi' || Auth::check() && Auth::user()-> role == 'pasien')
+            @if (Auth::check() && Auth::user()-> role == 'pasien')
             <li class="nav-item">
               <a href="{{ route('histori.index') }}" class="nav-link {{ request()->is('*histori*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-history"></i>

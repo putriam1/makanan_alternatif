@@ -32,7 +32,7 @@
 
         <label for="name">Nama</label>
         <div class="input-group mb-3">
-          <input type="text" class="form-control" name="name" placeholder="Masukkan nama Anda" required>
+          <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Anda" required>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
